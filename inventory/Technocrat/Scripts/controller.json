@@ -4875,10 +4875,11 @@
   ],
   "icon": "📦",
   "imported": true,
-  "importedAt": 1761306313043,
+  "importedAt": 1764829662904,
   "importedFrom": "inventory/Technocrat/Scripts",
   "itemType": "entity",
   "last_used": 1759497339108,
   "name": "controller",
-  "remote": true
+  "remote": true,
+  "syncedAt": 1765830563934
 }

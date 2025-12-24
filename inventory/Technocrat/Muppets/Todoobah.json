@@ -1,0 +1,438 @@
+{
+  "author": "Technocrat",
+  "created": 1765830413234,
+  "data": {
+    "Components": {
+      "AudioSource_26338": {
+        "bypassEffects": false,
+        "bypassListenerEffects": false,
+        "bypassReverbZones": false,
+        "loop": false,
+        "mute": false,
+        "pitch": 1,
+        "playOnAwake": true,
+        "spatialBlend": 1,
+        "volume": 10
+      },
+      "Box_1502": {
+        "depth": 0.05,
+        "height": 0.05,
+        "width": 0.05
+      },
+      "Cylinder_1156": {
+        "height": 0.1,
+        "radialSegments": 32,
+        "radius": 0.01
+      },
+      "GLTF_22872": {
+        "addColliders": false,
+        "climbable": false,
+        "generateMipMaps": true,
+        "legacyRotate": false,
+        "nonConvexColliders": false,
+        "slippery": false,
+        "url": "https://firebasestorage.googleapis.com/v0/b/welp-c0e8d.firebasestorage.app/o/glbs%2F4dceeaa3f65b1549a5e459ab26126b3a8a3695abb2553ca27a41fe0fe9c53b26.glb?alt=media"
+      },
+      "GLTF_68274": {
+        "addColliders": false,
+        "climbable": false,
+        "generateMipMaps": true,
+        "legacyRotate": false,
+        "nonConvexColliders": false,
+        "slippery": false,
+        "url": "https://firebasestorage.googleapis.com/v0/b/welp-c0e8d.firebasestorage.app/o/glbs%2F7217e616a50b06916d405e63c2d2511441ec11edeb5ce43fc5baa266c7e34099.glb?alt=media"
+      },
+      "GLTF_753528912": {
+        "addColliders": false,
+        "climbable": false,
+        "generateMipMaps": true,
+        "legacyRotate": false,
+        "nonConvexColliders": false,
+        "slippery": false,
+        "url": "https://firebasestorage.googleapis.com/v0/b/welp-c0e8d.firebasestorage.app/o/glbs%2F88f40efe7cfb8b597d0a79fef124ff63f7e6deee4e10c5af44c0bcafaff6439e.glb?alt=media"
+      },
+      "Material_1601": {
+        "color": {
+          "a": 1,
+          "b": 0.611764705882353,
+          "g": 0.2784313725490196,
+          "r": 0.0392156862745098
+        },
+        "generateMipMaps": true,
+        "shaderName": "Standard",
+        "side": 0,
+        "texture": ""
+      },
+      "Material_3724": {
+        "color": {
+          "a": 1,
+          "b": 0.011764705882352941,
+          "g": 0.011764705882352941,
+          "r": 0.011764705882352941
+        },
+        "generateMipMaps": true,
+        "shaderName": "Standard",
+        "side": 0,
+        "texture": ""
+      },
+      "Material_99794": {
+        "color": {
+          "a": 1,
+          "b": 0.9176470588235294,
+          "g": 0.1411764705882353,
+          "r": 0.19215686274509805
+        },
+        "generateMipMaps": true,
+        "shaderName": "Standard",
+        "side": 0,
+        "texture": ""
+      },
+      "ScriptRunner_48901": {
+        "file": "muppet.js",
+        "hotreload": true,
+        "name": "myScript",
+        "owner": "global",
+        "vars": {
+          "chatSfx": {
+            "type": "string",
+            "value": "https://firebasestorage.googleapis.com/v0/b/banterbrush-3d79e.firebasestorage.app/o/audio%2Fnotification.mp3?alt=media"
+          },
+          "dialogue": {
+            "type": "string",
+            "value": "Yeah, Saturn moves off your Moon when it leaves Pisces. That's the relief you'll feel emotionally. -------- Then it starts a new chapter in your 10th house — work, ambition, how you show up in the world. -------- You're tracking it right. Anything else?"
+          },
+          "enabled": {
+            "type": "boolean",
+            "value": true
+          },
+          "gazeRot": {
+            "type": "number",
+            "value": 5
+          },
+          "listeningTo": {
+            "type": "number",
+            "value": ""
+          },
+          "name": {
+            "type": "string",
+            "value": "Todoobah"
+          },
+          "thinking": {
+            "type": "boolean",
+            "value": true
+          }
+        }
+      },
+      "Sphere_37266": {
+        "heightSegments": 16,
+        "phiLength": 6.283185307179586,
+        "phiStart": 0,
+        "radius": 1,
+        "thetaLength": 3.141592653589793,
+        "thetaStart": 0,
+        "widthSegments": 16
+      }
+    },
+    "Entity": {
+      "Todoobah": {
+        "Antenna": {
+          "Bulb": {
+            "__meta": {
+              "active": true,
+              "components": {
+                "Box_1502": true,
+                "Material_3724": true
+              },
+              "layer": 0,
+              "localPosition": {
+                "x": 0,
+                "y": 0.05982886639941312,
+                "z": 0
+              },
+              "localRotation": {
+                "w": 1,
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "localScale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              },
+              "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "rotation": {
+                "w": 1,
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "uuid": 8680468607178
+            }
+          },
+          "__meta": {
+            "active": true,
+            "components": {
+              "Cylinder_1156": true,
+              "Material_1601": true
+            },
+            "layer": 0,
+            "localPosition": {
+              "x": 0,
+              "y": 1.6753575243158347,
+              "z": 0
+            },
+            "localRotation": {
+              "w": 1,
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "localScale": {
+              "x": 1,
+              "y": 1,
+              "z": 1
+            },
+            "position": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "rotation": {
+              "w": 1,
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "uuid": 9140348283162
+          }
+        },
+        "Ball": {
+          "__meta": {
+            "active": true,
+            "components": {
+              "Material_99794": true,
+              "Sphere_37266": true
+            },
+            "layer": 0,
+            "localPosition": {
+              "x": 0,
+              "y": 1.5,
+              "z": 0
+            },
+            "localRotation": {
+              "w": 1,
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "localScale": {
+              "x": 0.2,
+              "y": 0.2,
+              "z": 0.2
+            },
+            "rotation": {
+              "w": 1,
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "uuid": 6106641139269
+          }
+        },
+        "Bezos_Horseshoe_Hair": {
+          "__meta": {
+            "active": true,
+            "components": {
+              "GLTF_753528912": true
+            },
+            "layer": 0,
+            "localPosition": {
+              "x": 0,
+              "y": 1.48,
+              "z": 0
+            },
+            "localRotation": {
+              "w": 6.123233995736766e-17,
+              "x": 1,
+              "y": 0,
+              "z": 0
+            },
+            "localScale": {
+              "x": 0.20999999999999996,
+              "y": 0.20999999999999996,
+              "z": 0.20999999999999996
+            },
+            "uuid": 6336311039
+          }
+        },
+        "Dialogue": {
+          "__meta": {
+            "active": true,
+            "components": {
+              "AudioSource_26338": true
+            },
+            "layer": 0,
+            "localPosition": {
+              "x": 0,
+              "y": 2.4,
+              "z": 0
+            },
+            "localRotation": {
+              "w": 1,
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "localScale": {
+              "x": 0.25,
+              "y": 0.25,
+              "z": 0.25
+            },
+            "rotation": {
+              "w": 1,
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "uuid": 8308067865165
+          }
+        },
+        "Eyes": {
+          "Open": {
+            "__meta": {
+              "active": true,
+              "components": {
+                "GLTF_68274": true
+              },
+              "layer": 0,
+              "localPosition": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "localRotation": {
+                "w": 1,
+                "x": -8.527162253696051e-30,
+                "y": 4.000352837160703e-11,
+                "z": 2.131602536277351e-19
+              },
+              "localScale": {
+                "x": 0.125,
+                "y": 0.12499991666666667,
+                "z": 0.125
+              },
+              "rotation": {
+                "w": 0.9998394846916199,
+                "x": 0.014515937305986881,
+                "y": -0.007017492316663265,
+                "z": -0.007808694615960121
+              },
+              "uuid": 4503856130159
+            }
+          },
+          "Shut": {
+            "__meta": {
+              "active": false,
+              "components": {
+                "GLTF_22872": true
+              },
+              "layer": 0,
+              "localPosition": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "localRotation": {
+                "w": 1,
+                "x": -1.331632972778607e-7,
+                "y": 1.6734715002630907e-10,
+                "z": 3.27418175904981e-10
+              },
+              "localScale": {
+                "x": 0.125,
+                "y": 0.125,
+                "z": 0.125
+              },
+              "rotation": {
+                "w": 1,
+                "x": -1.331632972778607e-7,
+                "y": 1.6734715002630907e-10,
+                "z": 3.27418175904981e-10
+              },
+              "uuid": 5891269796228
+            }
+          },
+          "__meta": {
+            "active": true,
+            "layer": 0,
+            "localPosition": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "localRotation": {
+              "w": 1,
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "localScale": {
+              "x": 1,
+              "y": 1,
+              "z": 1
+            },
+            "rotation": {
+              "w": 1,
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "uuid": 4184302076990
+          }
+        },
+        "__meta": {
+          "active": true,
+          "components": {
+            "ScriptRunner_48901": true
+          },
+          "layer": 0,
+          "localPosition": {
+            "x": -0.15676301290265277,
+            "y": 0.3107184561613345,
+            "z": -0.11413282989968698
+          },
+          "localRotation": {
+            "w": 1,
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "localScale": {
+            "x": 1,
+            "y": 1,
+            "z": 1
+          },
+          "rotation": {
+            "w": 1,
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "uuid": 2439079743915
+        }
+      }
+    }
+  },
+  "description": "",
+  "folder": "Muppets",
+  "icon": "📦",
+  "itemType": "entity",
+  "last_used": 1765830413234,
+  "name": "Todoobah",
+  "syncedAt": 1765830412596
+}

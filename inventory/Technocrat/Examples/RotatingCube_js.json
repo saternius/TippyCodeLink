@@ -1,0 +1,65 @@
+{
+  "author": "Technocrat",
+  "created": 1765106664826,
+  "data": {
+    "Components": {
+      "ScriptAsset_48355": {
+        "author": "Technocrat",
+        "data": "console.log(\"rotating cube\") \n\nlet V = (attr) => {\n    if(!this.vars[attr]) return null;\n    return this.vars[attr].value;\n}\n\n\nthis.onStart = ()=>{\n    console.log(\"onStart\")\n}\n\nlet xRot = 0;\nthis.onUpdate = ()=>{\n    xRot += V(\"speed\");\n    this._entity._set(\"localRotation\", {\n        x: xRot,\n        y: xRot,\n        z: xRot\n    })\n}\n\nthis.onDestroy = ()=>{\n    console.log(\"onDestroy\")\n}\n",
+        "name": "RotatingCube.js",
+        "vars": {
+          "speed": {
+            "type": "number",
+            "value": 1
+          }
+        }
+      }
+    },
+    "Entity": {
+      "RotatingCube_js": {
+        "__meta": {
+          "active": true,
+          "components": {
+            "ScriptAsset_48355": true
+          },
+          "layer": 0,
+          "localPosition": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "localRotation": {
+            "w": 1,
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "localScale": {
+            "x": 1,
+            "y": 1,
+            "z": 1
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "rotation": {
+            "w": 1,
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "uuid": 3498711002282
+        }
+      }
+    }
+  },
+  "description": "",
+  "folder": "Examples",
+  "icon": "📦",
+  "itemType": "entity",
+  "last_used": 1765106664826,
+  "name": "RotatingCube_js",
+  "syncedAt": 1765106666294
+}

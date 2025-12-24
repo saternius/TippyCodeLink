@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code Proxy Viewer</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #1a1a2e;
+            color: #eee;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+        }
+        .config-panel {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #16213e;
+            border-radius: 8px;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        .config-panel label {
+            font-size: 14px;
+            color: #888;
+        }
+        .config-panel input {
+            padding: 8px 12px;
+            background: #0d1117;
+            border: 1px solid #0f3460;
+            border-radius: 4px;
+            color: #eee;
+            font-family: inherit;
+            font-size: 14px;
+        }
+        .config-panel button {
+            padding: 8px 16px;
+            background: #4ade80;
+            color: #0d1117;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .config-panel button:hover {
+            background: #22c55e;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 15px;
+            background: #16213e;
+            border-radius: 8px 8px 0 0;
+            border-bottom: 1px solid #0f3460;
+        }
+        .header h1 {
+            font-size: 16px;
+            color: #e94560;
+        }
+        .status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 12px;
+        }
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #666;
+        }
+        .status-dot.running { background: #4ade80; animation: pulse 1s infinite; }
+        .status-dot.completed { background: #60a5fa; }
+        .status-dot.error { background: #f87171; }
+        .status-dot.interrupted { background: #fbbf24; }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .meta-info {
+            font-size: 11px;
+            color: #888;
+        }
+        .transcript {
+            flex: 1;
+            background: #0d1117;
+            overflow-y: auto;
+            padding: 15px;
+            border-left: 1px solid #0f3460;
+            border-right: 1px solid #0f3460;
+        }
+        .transcript::-webkit-scrollbar {
+            width: 8px;
+        }
+        .transcript::-webkit-scrollbar-track {
+            background: #0d1117;
+        }
+        .transcript::-webkit-scrollbar-thumb {
+            background: #333;
+            border-radius: 4px;
+        }
+        .message {
+            margin-bottom: 16px;
+            max-width: 85%;
+        }
+        .message.user {
+            margin-left: auto;
+        }
+        .message.assistant {
+            margin-right: auto;
+        }
+        .message-header {
+            font-size: 11px;
+            color: #888;
+            margin-bottom: 4px;
+            text-transform: uppercase;
+        }
+        .message.user .message-header {
+            text-align: right;
+        }
+        .message-bubble {
+            padding: 12px 16px;
+            border-radius: 12px;
+            line-height: 1.5;
+        }
+        .message.user .message-bubble {
+            background: #3b82f6;
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+        .message.assistant .message-bubble {
+            background: #2d3748;
+            color: #eee;
+            border-bottom-left-radius: 4px;
+        }
+        .content-text {
+            white-space: pre-wrap;
+            word-break: break-word;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        .tool-block {
+            margin: 8px 0;
+            background: #1a1a2e;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .tool-header {
+            padding: 8px 12px;
+            background: #0f3460;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 12px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .tool-header:hover {
+            background: #1a4480;
+        }
+        .tool-name {
+            color: #f59e0b;
+            font-weight: bold;
+        }
+        .tool-toggle {
+            color: #666;
+        }
+        .tool-content {
+            padding: 12px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 12px;
+            max-height: 300px;
+            overflow: auto;
+            display: none;
+        }
+        .tool-content.expanded {
+            display: block;
+        }
+        .tool-content pre {
+            white-space: pre-wrap;
+            word-break: break-all;
+            color: #a0aec0;
+        }
+        .tool-result {
+            border-left: 3px solid #4ade80;
+        }
+        .tool-use {
+            border-left: 3px solid #f59e0b;
+        }
+        .input-area {
+            display: flex;
+            background: #16213e;
+            border-radius: 0 0 8px 8px;
+            border-top: 1px solid #0f3460;
+        }
+        .prompt {
+            padding: 12px 15px;
+            color: #4ade80;
+            font-weight: bold;
+        }
+        #stdin-input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: #eee;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 14px;
+            padding: 12px 0;
+            outline: none;
+        }
+        #stdin-input::placeholder {
+            color: #555;
+        }
+        .send-btn {
+            padding: 12px 20px;
+            background: #e94560;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.2s;
+        }
+        .send-btn:hover {
+            background: #ff6b6b;
+        }
+        .send-btn:disabled {
+            background: #444;
+            cursor: not-allowed;
+        }
+        .clear-btn {
+            padding: 12px 20px;
+            background: #6b7280;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.2s;
+            border-left: 1px solid #0f3460;
+        }
+        .clear-btn:hover {
+            background: #9ca3af;
+        }
+        .disconnected {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+        .message-count {
+            font-size: 11px;
+            color: #666;
+            padding: 5px 10px;
+            text-align: center;
+            border-top: 1px solid #0f3460;
+        }
+    </style>
+</head>
+<body>
+    <div class="config-panel">
+        <label>Session Name:</label>
+        <input type="text" id="shell-name" placeholder="e.g., default" value="default">
+        <button onclick="connect()">Connect</button>
+    </div>
+
+    <div class="header">
+        <h1 id="title">Claude Code Proxy</h1>
+        <div class="status">
+            <span class="meta-info" id="command-info"></span>
+            <div class="status-dot" id="status-dot"></div>
+            <span id="status-text">Disconnected</span>
+        </div>
+    </div>
+
+    <div class="transcript" id="transcript">
+        <div class="disconnected">Enter a session name and click Connect</div>
+    </div>
+
+    <div class="message-count" id="message-count"></div>
+
+    <div class="input-area">
+        <span class="prompt">></span>
+        <input type="text" id="stdin-input" placeholder="Type message and press Enter..." disabled>
+        <button class="send-btn" id="send-btn" onclick="sendInput()" disabled>Send</button>
+        <button class="clear-btn" onclick="sendClear()">Clear</button>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDKMwZ7_tmb5HHMd7aNj_tT_VwqBKN6yCg",
+            authDomain: "welp-c0e8d.firebaseapp.com",
+            databaseURL: "https://welp-c0e8d-default-rtdb.firebaseio.com",
+            projectId: "welp-c0e8d",
+            storageBucket: "welp-c0e8d.appspot.com",
+            messagingSenderId: "1018564206316",
+            appId: "1:1018564206316:web:placeholder"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        let shellRef = null;
+        let stdinRef = null;
+        let stdinIndex = 0;
+        let autoScroll = true;
+        let messages = new Map(); // timestamp -> message data
+
+        const transcript = document.getElementById('transcript');
+        const stdinInput = document.getElementById('stdin-input');
+        const sendBtn = document.getElementById('send-btn');
+        const statusDot = document.getElementById('status-dot');
+        const statusText = document.getElementById('status-text');
+        const commandInfo = document.getElementById('command-info');
+        const titleEl = document.getElementById('title');
+        const messageCount = document.getElementById('message-count');
+
+        // Get shell name from URL params if present
+        const urlParams = new URLSearchParams(window.location.search);
+        const urlShellName = urlParams.get('name');
+        if (urlShellName) {
+            document.getElementById('shell-name').value = urlShellName;
+            window.addEventListener('load', () => setTimeout(connect, 100));
+        }
+
+        function connect() {
+            const shellName = document.getElementById('shell-name').value.trim();
+            if (!shellName) {
+                alert('Please enter a session name');
+                return;
+            }
+
+            // Clean up previous listeners
+            if (shellRef) shellRef.off();
+
+            // Clear state
+            transcript.innerHTML = '';
+            messages.clear();
+            stdinIndex = 0;
+
+            // Update URL
+            const newUrl = `${window.location.pathname}?name=${encodeURIComponent(shellName)}`;
+            window.history.pushState({}, '', newUrl);
+
+            // Set up references
+            shellRef = database.ref(`/shell/${shellName}`);
+            stdinRef = shellRef.child('stdin');
+
+            titleEl.textContent = `Claude Code: ${shellName}`;
+
+            // Listen for metadata
+            shellRef.child('meta').on('value', (snapshot) => {
+                const meta = snapshot.val();
+                if (meta) {
+                    updateStatus(meta.status || 'unknown');
+                    commandInfo.textContent = meta.command || '';
+                    const isRunning = meta.status === 'running';
+                    stdinInput.disabled = !isRunning;
+                    sendBtn.disabled = !isRunning;
+                } else {
+                    updateStatus('not_found');
+                    commandInfo.textContent = '';
+                    stdinInput.disabled = true;
+                    sendBtn.disabled = true;
+                }
+            });
+
+            // Get current stdin index
+            stdinRef.once('value', (snapshot) => {
+                const data = snapshot.val();
+                if (data && typeof data === 'object') {
+                    const keys = Object.keys(data).map(k => parseInt(k));
+                    stdinIndex = Math.max(...keys, -1) + 1;
+                }
+            });
+
+            // Listen for transcript messages (child_added for real-time)
+            shellRef.on('child_added', (snapshot) => {
+                const key = snapshot.key;
+                // Skip meta and stdin
+                if (key === 'meta' || key === 'stdin') return;
+
+                const data = snapshot.val();
+                if (data && data.role) {
+                    messages.set(key, data);
+                    renderMessages();
+                }
+            });
+
+            // Also handle changes to existing messages
+            shellRef.on('child_changed', (snapshot) => {
+                const key = snapshot.key;
+                if (key === 'meta' || key === 'stdin') return;
+
+                const data = snapshot.val();
+                if (data && data.role) {
+                    messages.set(key, data);
+                    renderMessages();
+                }
+            });
+        }
+
+        function updateStatus(status) {
+            statusDot.className = 'status-dot ' + status;
+            const statusLabels = {
+                'running': 'Running',
+                'completed': 'Completed',
+                'error': 'Error',
+                'interrupted': 'Interrupted',
+                'not_found': 'Not Found',
+                'unknown': 'Unknown'
+            };
+            statusText.textContent = statusLabels[status] || status;
+        }
+
+        function renderMessages() {
+            transcript.innerHTML = '';
+
+            // Sort messages by timestamp key
+            const sortedEntries = [...messages.entries()].sort((a, b) => {
+                return a[0].localeCompare(b[0]);
+            });
+
+            for (const [ts, msg] of sortedEntries) {
+                appendMessage(msg.role, msg.content, ts);
+            }
+
+            messageCount.textContent = `${messages.size} messages`;
+
+            if (autoScroll) {
+                transcript.scrollTop = transcript.scrollHeight;
+            }
+        }
+
+        function appendMessage(role, content, timestamp) {
+            const msgEl = document.createElement('div');
+            msgEl.className = `message ${role}`;
+
+            const headerEl = document.createElement('div');
+            headerEl.className = 'message-header';
+            headerEl.textContent = role;
+            msgEl.appendChild(headerEl);
+
+            const bubbleEl = document.createElement('div');
+            bubbleEl.className = 'message-bubble';
+
+            // Process content array
+            if (Array.isArray(content)) {
+                for (const item of content) {
+                    bubbleEl.appendChild(renderContentItem(item));
+                }
+            } else if (typeof content === 'string') {
+                const textEl = document.createElement('div');
+                textEl.className = 'content-text';
+                textEl.textContent = content;
+                bubbleEl.appendChild(textEl);
+            }
+
+            msgEl.appendChild(bubbleEl);
+            transcript.appendChild(msgEl);
+        }
+
+        function renderContentItem(item) {
+            // String content
+            if (typeof item === 'string') {
+                const textEl = document.createElement('div');
+                textEl.className = 'content-text';
+                textEl.textContent = item;
+                return textEl;
+            }
+
+            // Object content
+            if (typeof item === 'object' && item !== null) {
+                // Text block
+                if (item.type === 'text' || item.text) {
+                    const textEl = document.createElement('div');
+                    textEl.className = 'content-text';
+                    textEl.textContent = item.text || '';
+                    return textEl;
+                }
+
+                // Tool use block
+                if (item.type === 'tool_use') {
+                    return renderToolBlock('tool_use', item.name, item.input);
+                }
+
+                // Tool result block
+                if (item.type === 'tool_result') {
+                    return renderToolBlock('tool_result', 'Result', item.content);
+                }
+
+                // Generic object - show as JSON
+                const textEl = document.createElement('div');
+                textEl.className = 'content-text';
+                textEl.textContent = JSON.stringify(item, null, 2);
+                return textEl;
+            }
+
+            // Fallback
+            const textEl = document.createElement('div');
+            textEl.className = 'content-text';
+            textEl.textContent = String(item);
+            return textEl;
+        }
+
+        function renderToolBlock(type, name, data) {
+            const blockEl = document.createElement('div');
+            blockEl.className = `tool-block ${type}`;
+
+            const headerEl = document.createElement('div');
+            headerEl.className = 'tool-header';
+
+            const nameEl = document.createElement('span');
+            nameEl.className = 'tool-name';
+            nameEl.textContent = name;
+            headerEl.appendChild(nameEl);
+
+            const toggleEl = document.createElement('span');
+            toggleEl.className = 'tool-toggle';
+            toggleEl.textContent = '▼';
+            headerEl.appendChild(toggleEl);
+
+            const contentEl = document.createElement('div');
+            contentEl.className = 'tool-content';
+
+            const preEl = document.createElement('pre');
+            if (typeof data === 'string') {
+                preEl.textContent = data;
+            } else {
+                preEl.textContent = JSON.stringify(data, null, 2);
+            }
+            contentEl.appendChild(preEl);
+
+            headerEl.addEventListener('click', () => {
+                contentEl.classList.toggle('expanded');
+                toggleEl.textContent = contentEl.classList.contains('expanded') ? '▲' : '▼';
+            });
+
+            blockEl.appendChild(headerEl);
+            blockEl.appendChild(contentEl);
+            return blockEl;
+        }
+
+        function sendInput() {
+            const input = stdinInput.value;
+            if (!input || !stdinRef) return;
+
+            // Write to Firebase stdin path
+            stdinRef.child(String(stdinIndex)).set(input)
+                .then(() => {
+                    stdinIndex++;
+                    stdinInput.value = '';
+                })
+                .catch(err => {
+                    console.error('Failed to send input:', err);
+                    alert('Failed to send input: ' + err.message);
+                });
+        }
+
+        function sendClear() {
+            if (!stdinRef) return;
+
+            // Send /clear command to clear Claude Code session
+            stdinRef.child(String(stdinIndex)).set('/clear')
+                .then(() => {
+                    stdinIndex++;
+                })
+                .catch(err => {
+                    console.error('Failed to send clear command:', err);
+                    alert('Failed to send clear command: ' + err.message);
+                });
+        }
+
+        // Detect if user scrolls up (disable auto-scroll)
+        transcript.addEventListener('scroll', () => {
+            const isAtBottom = transcript.scrollHeight - transcript.scrollTop <= transcript.clientHeight + 50;
+            autoScroll = isAtBottom;
+        });
+
+        // Handle Enter key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                if (document.activeElement === stdinInput) {
+                    e.preventDefault();
+                    sendInput();
+                } else if (document.activeElement === document.getElementById('shell-name')) {
+                    e.preventDefault();
+                    connect();
+                }
+            }
+        });
+    </script>
+</body>
+</html>

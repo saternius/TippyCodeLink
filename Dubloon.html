@@ -1,0 +1,1717 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dubloon - Pitch to MIDI</title>
+    <style>
+        /* ===========================================
+           CSS VARIABLES & RESET
+           =========================================== */
+        :root {
+            --bg-primary: #0d1117;
+            --bg-secondary: #161b22;
+            --bg-tertiary: #21262d;
+            --accent: #58a6ff;
+            --accent-bright: #79c0ff;
+            --success: #3fb950;
+            --warning: #d29922;
+            --error: #f85149;
+            --text-primary: #e6edf3;
+            --text-secondary: #8b949e;
+            --border: #30363d;
+            --shadow: rgba(0, 0, 0, 0.3);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        /* ===========================================
+           LAYOUT
+           =========================================== */
+        .container {
+            width: 100%;
+            max-width: 600px;
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            box-shadow: 0 8px 24px var(--shadow);
+            overflow: hidden;
+        }
+
+        header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border);
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 24px;
+            font-weight: 600;
+            letter-spacing: 2px;
+            color: var(--accent);
+        }
+
+        header p {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+
+        section {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        section:last-of-type {
+            border-bottom: none;
+        }
+
+        /* ===========================================
+           NOTE DISPLAY
+           =========================================== */
+        .note-display {
+            text-align: center;
+            padding: 24px 0;
+        }
+
+        .note-name {
+            font-size: 72px;
+            font-weight: 700;
+            color: var(--text-primary);
+            line-height: 1;
+            font-family: 'SF Mono', Monaco, 'Courier New', monospace;
+        }
+
+        .note-name.active {
+            color: var(--success);
+        }
+
+        .note-details {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            margin-top: 12px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .note-details span {
+            font-family: 'SF Mono', Monaco, 'Courier New', monospace;
+        }
+
+        .cents-display {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .cents-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--text-secondary);
+        }
+
+        .cents-indicator.flat {
+            background: var(--warning);
+        }
+
+        .cents-indicator.sharp {
+            background: var(--error);
+        }
+
+        .cents-indicator.in-tune {
+            background: var(--success);
+        }
+
+        /* ===========================================
+           WAVEFORM CANVAS
+           =========================================== */
+        .waveform-container {
+            background: var(--bg-tertiary);
+            border-radius: 8px;
+            padding: 2px;
+            margin-top: 16px;
+        }
+
+        #waveform {
+            width: 100%;
+            height: 100px;
+            display: block;
+            border-radius: 6px;
+        }
+
+        /* ===========================================
+           SETTINGS
+           =========================================== */
+        .settings-grid {
+            display: grid;
+            gap: 16px;
+        }
+
+        .setting-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .setting-group label {
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        select, input[type="range"] {
+            width: 100%;
+            height: 40px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text-primary);
+            font-size: 14px;
+            padding: 0 12px;
+            cursor: pointer;
+        }
+
+        select:focus, input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        select option {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
+        /* Octave buttons */
+        .octave-control {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .octave-btn {
+            width: 40px;
+            height: 40px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text-primary);
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .octave-btn:hover {
+            background: var(--border);
+        }
+
+        .octave-btn:active {
+            transform: scale(0.95);
+        }
+
+        .octave-value {
+            flex: 1;
+            text-align: center;
+            font-size: 18px;
+            font-weight: 600;
+            font-family: 'SF Mono', Monaco, 'Courier New', monospace;
+        }
+
+        /* Sensitivity slider */
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        input[type="range"] {
+            -webkit-appearance: none;
+            appearance: none;
+            height: 8px;
+            padding: 0;
+            background: var(--bg-tertiary);
+            border-radius: 4px;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            background: var(--accent);
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            background: var(--accent);
+            border-radius: 50%;
+            cursor: pointer;
+            border: none;
+        }
+
+        .slider-value {
+            min-width: 40px;
+            text-align: right;
+            font-family: 'SF Mono', Monaco, 'Courier New', monospace;
+            font-size: 14px;
+        }
+
+        /* Two-column layout for settings */
+        .settings-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        /* Synth section */
+        .synth-section {
+            margin-top: 8px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border);
+        }
+
+        .synth-header {
+            margin-bottom: 12px;
+        }
+
+        .toggle-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .toggle-label input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--accent);
+            cursor: pointer;
+        }
+
+        .toggle-text {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-primary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .synth-controls {
+            display: none;
+            padding-top: 4px;
+        }
+
+        .synth-controls.visible {
+            display: block;
+        }
+
+        /* ===========================================
+           CONTROLS
+           =========================================== */
+        .controls {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            flex: 1;
+            height: 48px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: var(--bg-primary);
+        }
+
+        .btn-primary:hover {
+            background: var(--accent-bright);
+        }
+
+        .btn-primary:disabled {
+            background: var(--border);
+            color: var(--text-secondary);
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--border);
+        }
+
+        .btn-secondary:disabled {
+            color: var(--text-secondary);
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-danger {
+            background: var(--error);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            filter: brightness(1.1);
+        }
+
+        /* ===========================================
+           STATUS BAR
+           =========================================== */
+        .status-bar {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 24px;
+            background: var(--bg-tertiary);
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--text-secondary);
+        }
+
+        .status-dot.ready {
+            background: var(--warning);
+        }
+
+        .status-dot.running {
+            background: var(--success);
+            animation: pulse 1.5s infinite;
+        }
+
+        .status-dot.error {
+            background: var(--error);
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* ===========================================
+           ERROR MESSAGES
+           =========================================== */
+        .error-banner {
+            display: none;
+            padding: 12px 24px;
+            background: rgba(248, 81, 73, 0.15);
+            border-bottom: 1px solid var(--error);
+            color: var(--error);
+            font-size: 13px;
+        }
+
+        .error-banner.visible {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Error Banner -->
+        <div class="error-banner" id="errorBanner"></div>
+
+        <!-- Header -->
+        <header>
+            <h1>DUBLOON</h1>
+            <p>Pitch to MIDI Converter</p>
+        </header>
+
+        <!-- Note Display -->
+        <section>
+            <div class="note-display">
+                <div class="note-name" id="noteName">--</div>
+                <div class="note-details">
+                    <span id="frequency">--- Hz</span>
+                    <span id="midiNote">MIDI --</span>
+                    <span class="cents-display">
+                        <span class="cents-indicator" id="centsIndicator"></span>
+                        <span id="cents">-- cents</span>
+                    </span>
+                </div>
+            </div>
+            <div class="waveform-container">
+                <canvas id="waveform"></canvas>
+            </div>
+        </section>
+
+        <!-- Settings -->
+        <section>
+            <div class="settings-grid">
+                <div class="settings-row">
+                    <div class="setting-group">
+                        <label for="micSelect">Microphone</label>
+                        <select id="micSelect">
+                            <option value="">Select microphone...</option>
+                        </select>
+                    </div>
+                    <div class="setting-group">
+                        <label for="midiSelect">MIDI Output</label>
+                        <select id="midiSelect">
+                            <option value="">Select MIDI device...</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="settings-row">
+                    <div class="setting-group">
+                        <label for="channelSelect">MIDI Channel</label>
+                        <select id="channelSelect"></select>
+                    </div>
+                    <div class="setting-group">
+                        <label>Octave Shift</label>
+                        <div class="octave-control">
+                            <button class="octave-btn" id="octaveDown">-</button>
+                            <span class="octave-value" id="octaveValue">0</span>
+                            <button class="octave-btn" id="octaveUp">+</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="setting-group">
+                    <label for="sensitivity">Sensitivity</label>
+                    <div class="slider-container">
+                        <input type="range" id="sensitivity" min="0" max="100" value="70">
+                        <span class="slider-value" id="sensitivityValue">70%</span>
+                    </div>
+                </div>
+
+                <!-- Synthesizer Settings -->
+                <div class="synth-section">
+                    <div class="synth-header">
+                        <label class="toggle-label">
+                            <input type="checkbox" id="synthEnabled">
+                            <span class="toggle-text">Audio Monitor</span>
+                        </label>
+                    </div>
+                    <div class="synth-controls" id="synthControls">
+                        <div class="settings-row">
+                            <div class="setting-group">
+                                <label for="synthWaveform">Waveform</label>
+                                <select id="synthWaveform">
+                                    <option value="sine">Sine</option>
+                                    <option value="triangle">Triangle</option>
+                                    <option value="sawtooth">Sawtooth</option>
+                                    <option value="square">Square</option>
+                                </select>
+                            </div>
+                            <div class="setting-group">
+                                <label for="synthVolume">Volume</label>
+                                <div class="slider-container">
+                                    <input type="range" id="synthVolume" min="0" max="100" value="50">
+                                    <span class="slider-value" id="synthVolumeValue">50%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Controls -->
+        <section>
+            <div class="controls">
+                <button class="btn btn-primary" id="startBtn">Start</button>
+                <button class="btn btn-secondary" id="stopBtn" disabled>Stop</button>
+                <button class="btn btn-danger" id="panicBtn">Panic</button>
+            </div>
+        </section>
+
+        <!-- Status Bar -->
+        <footer class="status-bar">
+            <div class="status-indicator">
+                <span class="status-dot" id="statusDot"></span>
+                <span id="statusText">Ready</span>
+            </div>
+            <span id="latency">--</span>
+        </footer>
+    </div>
+
+    <script>
+    // ==============================================
+    // CONFIGURATION
+    // ==============================================
+    const CONFIG = {
+        // Audio settings
+        bufferSize: 2048,
+        processInterval: 10, // ms
+
+        // Pitch detection (YIN)
+        yinThreshold: 0.15,
+        confidenceThreshold: 0.5,
+        minFrequency: 50,   // Hz - ignore below this
+        maxFrequency: 2000, // Hz - ignore above this
+
+        // Note tracking
+        noteOnConsecutive: 3,
+        noteOffDelay: 50, // ms
+        centsHysteresis: 30,
+        minNoteDuration: 30, // ms
+
+        // MIDI
+        channel: 0,
+        octaveShift: 0,
+        baseVelocity: 100,
+        velocityFromAmplitude: true,
+        pitchBendRange: 2, // semitones - standard pitch bend range
+
+        // Sensitivity (affects confidence threshold)
+        sensitivity: 70,
+
+        // Synthesizer
+        synthEnabled: false,
+        synthVolume: 50,
+        synthWaveform: 'sine', // sine, triangle, sawtooth, square
+        synthAttack: 0.02,
+        synthRelease: 0.1
+    };
+
+    // ==============================================
+    // UTILITY FUNCTIONS
+    // ==============================================
+    const NOTE_NAMES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+
+    function frequencyToMidi(frequency) {
+        if (frequency <= 0) return null;
+        return 69 + 12 * Math.log2(frequency / 440);
+    }
+
+    function frequencyToMidiWithCents(frequency) {
+        const exactMidi = frequencyToMidi(frequency);
+        if (exactMidi === null) return { note: null, cents: 0 };
+        const roundedMidi = Math.round(exactMidi);
+        const cents = Math.round((exactMidi - roundedMidi) * 100);
+        return { note: roundedMidi, cents };
+    }
+
+    function midiToNoteName(midiNote) {
+        if (midiNote === null || midiNote < 0 || midiNote > 127) return '--';
+        const octave = Math.floor(midiNote / 12) - 1;
+        const noteName = NOTE_NAMES[midiNote % 12];
+        return `${noteName}${octave}`;
+    }
+
+    function midiToFrequency(midiNote) {
+        return 440 * Math.pow(2, (midiNote - 69) / 12);
+    }
+
+    function calculateRMS(buffer) {
+        let sum = 0;
+        for (let i = 0; i < buffer.length; i++) {
+            sum += buffer[i] * buffer[i];
+        }
+        return Math.sqrt(sum / buffer.length);
+    }
+
+    function rmsToDb(rms) {
+        return 20 * Math.log10(Math.max(rms, 0.0001));
+    }
+
+    // ==============================================
+    // YIN PITCH DETECTION
+    // ==============================================
+    class YinDetector {
+        constructor(sampleRate, bufferSize) {
+            this.sampleRate = sampleRate;
+            this.bufferSize = bufferSize;
+            this.halfBuffer = Math.floor(bufferSize / 2);
+            this.yinBuffer = new Float32Array(this.halfBuffer);
+        }
+
+        detect(buffer, threshold = CONFIG.yinThreshold) {
+            const halfBuffer = this.halfBuffer;
+            const yinBuffer = this.yinBuffer;
+
+            // Step 1: Difference function
+            for (let tau = 0; tau < halfBuffer; tau++) {
+                yinBuffer[tau] = 0;
+                for (let i = 0; i < halfBuffer; i++) {
+                    const delta = buffer[i] - buffer[i + tau];
+                    yinBuffer[tau] += delta * delta;
+                }
+            }
+
+            // Step 2: Cumulative mean normalized difference
+            yinBuffer[0] = 1;
+            let runningSum = 0;
+            for (let tau = 1; tau < halfBuffer; tau++) {
+                runningSum += yinBuffer[tau];
+                yinBuffer[tau] = yinBuffer[tau] * tau / runningSum;
+            }
+
+            // Step 3: Absolute threshold
+            let tauEstimate = -1;
+            for (let tau = 2; tau < halfBuffer; tau++) {
+                if (yinBuffer[tau] < threshold) {
+                    while (tau + 1 < halfBuffer && yinBuffer[tau + 1] < yinBuffer[tau]) {
+                        tau++;
+                    }
+                    tauEstimate = tau;
+                    break;
+                }
+            }
+
+            // No pitch found
+            if (tauEstimate === -1) {
+                return { frequency: null, confidence: 0 };
+            }
+
+            // Step 4: Parabolic interpolation
+            const betterTau = this.parabolicInterpolation(tauEstimate);
+            const frequency = this.sampleRate / betterTau;
+            const confidence = 1 - yinBuffer[tauEstimate];
+
+            return { frequency, confidence };
+        }
+
+        parabolicInterpolation(tauEstimate) {
+            const yinBuffer = this.yinBuffer;
+            const x0 = tauEstimate < 1 ? tauEstimate : tauEstimate - 1;
+            const x2 = tauEstimate + 1 < this.halfBuffer ? tauEstimate + 1 : tauEstimate;
+
+            if (x0 === tauEstimate) {
+                return yinBuffer[tauEstimate] <= yinBuffer[x2] ? tauEstimate : x2;
+            }
+            if (x2 === tauEstimate) {
+                return yinBuffer[tauEstimate] <= yinBuffer[x0] ? tauEstimate : x0;
+            }
+
+            const s0 = yinBuffer[x0];
+            const s1 = yinBuffer[tauEstimate];
+            const s2 = yinBuffer[x2];
+
+            return tauEstimate + (s2 - s0) / (2 * (2 * s1 - s2 - s0));
+        }
+    }
+
+    // ==============================================
+    // NOTE TRACKER (Hysteresis)
+    // ==============================================
+    class NoteTracker {
+        constructor() {
+            this.currentNote = null;
+            this.noteStartTime = 0;
+            this.silenceStartTime = 0;
+            this.consecutiveReadings = 0;
+            this.pendingNote = null;
+        }
+
+        reset() {
+            this.currentNote = null;
+            this.noteStartTime = 0;
+            this.silenceStartTime = 0;
+            this.consecutiveReadings = 0;
+            this.pendingNote = null;
+        }
+
+        update(frequency, confidence, timestamp) {
+            const adjustedThreshold = CONFIG.confidenceThreshold * (1 - CONFIG.sensitivity / 200);
+
+            // No valid pitch detected
+            if (confidence < adjustedThreshold || frequency === null ||
+                frequency < CONFIG.minFrequency || frequency > CONFIG.maxFrequency) {
+                return this.handleSilence(timestamp);
+            }
+
+            const { note, cents } = frequencyToMidiWithCents(frequency);
+            const shiftedNote = note + (CONFIG.octaveShift * 12);
+
+            // Clamp to valid MIDI range
+            if (shiftedNote < 0 || shiftedNote > 127) {
+                return this.handleSilence(timestamp);
+            }
+
+            // No current note - try to start a new one
+            if (this.currentNote === null) {
+                return this.handleNewNote(shiftedNote, cents, timestamp);
+            }
+
+            // Check if note has changed significantly
+            if (shiftedNote !== this.currentNote) {
+                const centsDiff = Math.abs(cents);
+                if (centsDiff > CONFIG.centsHysteresis || Math.abs(shiftedNote - this.currentNote) > 1) {
+                    return this.handleNoteChange(shiftedNote, cents, timestamp);
+                }
+            }
+
+            // Same note, reset silence timer and return pitch bend update
+            this.silenceStartTime = 0;
+            return { type: 'pitchBend', note: this.currentNote, cents };
+        }
+
+        handleNewNote(note, cents, timestamp) {
+            if (this.pendingNote === note) {
+                this.consecutiveReadings++;
+            } else {
+                this.pendingNote = note;
+                this.consecutiveReadings = 1;
+            }
+
+            if (this.consecutiveReadings >= CONFIG.noteOnConsecutive) {
+                this.currentNote = note;
+                this.noteStartTime = timestamp;
+                this.consecutiveReadings = 0;
+                this.pendingNote = null;
+                this.silenceStartTime = 0;
+                return { type: 'noteOn', note, cents };
+            }
+
+            return null;
+        }
+
+        handleNoteChange(newNote, cents, timestamp) {
+            const noteDuration = timestamp - this.noteStartTime;
+            if (noteDuration < CONFIG.minNoteDuration) {
+                return null;
+            }
+
+            const oldNote = this.currentNote;
+            this.currentNote = newNote;
+            this.noteStartTime = timestamp;
+            this.silenceStartTime = 0;
+            return { type: 'noteChange', oldNote, newNote, cents };
+        }
+
+        handleSilence(timestamp) {
+            this.consecutiveReadings = 0;
+            this.pendingNote = null;
+
+            if (this.currentNote === null) {
+                return null;
+            }
+
+            if (this.silenceStartTime === 0) {
+                this.silenceStartTime = timestamp;
+            }
+
+            if (timestamp - this.silenceStartTime > CONFIG.noteOffDelay) {
+                const note = this.currentNote;
+                this.currentNote = null;
+                return { type: 'noteOff', note };
+            }
+
+            return null;
+        }
+    }
+
+    // ==============================================
+    // MIDI OUTPUT
+    // ==============================================
+    class MidiOutput {
+        constructor() {
+            this.midiAccess = null;
+            this.selectedOutput = null;
+            this.lastPitchBend = 8192; // Center position
+        }
+
+        async initialize() {
+            if (!navigator.requestMIDIAccess) {
+                throw new Error('Web MIDI API not supported in this browser');
+            }
+
+            try {
+                this.midiAccess = await navigator.requestMIDIAccess({ sysex: false });
+                this.midiAccess.onstatechange = (e) => this.onStateChange(e);
+                return this.getOutputs();
+            } catch (err) {
+                throw new Error(`MIDI access denied: ${err.message}`);
+            }
+        }
+
+        getOutputs() {
+            const outputs = [];
+            if (!this.midiAccess) return outputs;
+
+            this.midiAccess.outputs.forEach((output) => {
+                outputs.push({
+                    id: output.id,
+                    name: output.name || 'Unknown Device',
+                    manufacturer: output.manufacturer
+                });
+            });
+            return outputs;
+        }
+
+        selectOutput(outputId) {
+            if (!this.midiAccess || !outputId) {
+                this.selectedOutput = null;
+                return false;
+            }
+            this.selectedOutput = this.midiAccess.outputs.get(outputId);
+            return this.selectedOutput !== undefined;
+        }
+
+        onStateChange(event) {
+            console.log('MIDI state change:', event.port.name, event.port.state);
+            // Dispatch custom event for UI update
+            window.dispatchEvent(new CustomEvent('midiStateChange'));
+        }
+
+        sendNoteOn(note, velocity = CONFIG.baseVelocity) {
+            if (!this.selectedOutput) return;
+
+            note = Math.max(0, Math.min(127, note));
+            velocity = Math.max(1, Math.min(127, velocity));
+
+            const statusByte = 0x90 | CONFIG.channel;
+            this.selectedOutput.send([statusByte, note, velocity]);
+        }
+
+        sendNoteOff(note) {
+            if (!this.selectedOutput) return;
+
+            note = Math.max(0, Math.min(127, note));
+
+            const statusByte = 0x80 | CONFIG.channel;
+            this.selectedOutput.send([statusByte, note, 0]);
+        }
+
+        sendPitchBend(cents) {
+            if (!this.selectedOutput) return;
+
+            // Convert cents to pitch bend value
+            // Pitch bend range is typically 2 semitones (200 cents) = full range
+            // MIDI pitch bend: 0 = -2 semitones, 8192 = center, 16383 = +2 semitones
+            const bendRange = CONFIG.pitchBendRange * 100; // cents
+            const normalizedBend = cents / bendRange; // -1 to 1
+            const bendValue = Math.round(8192 + normalizedBend * 8191);
+            const clampedBend = Math.max(0, Math.min(16383, bendValue));
+
+            // Only send if changed significantly (reduce MIDI traffic)
+            if (Math.abs(clampedBend - this.lastPitchBend) < 64) return;
+            this.lastPitchBend = clampedBend;
+
+            const lsb = clampedBend & 0x7F;
+            const msb = (clampedBend >> 7) & 0x7F;
+
+            const statusByte = 0xE0 | CONFIG.channel;
+            this.selectedOutput.send([statusByte, lsb, msb]);
+        }
+
+        resetPitchBend() {
+            if (!this.selectedOutput) return;
+
+            this.lastPitchBend = 8192;
+            const statusByte = 0xE0 | CONFIG.channel;
+            this.selectedOutput.send([statusByte, 0, 64]); // Center = 8192
+        }
+
+        allNotesOff() {
+            if (!this.selectedOutput) return;
+
+            // Send All Notes Off (CC 123)
+            const statusByte = 0xB0 | CONFIG.channel;
+            this.selectedOutput.send([statusByte, 123, 0]);
+
+            // Also reset pitch bend
+            this.resetPitchBend();
+        }
+    }
+
+    // ==============================================
+    // SYNTHESIZER (Clean Note Playback)
+    // ==============================================
+    class Synthesizer {
+        constructor() {
+            this.audioContext = null;
+            this.masterGain = null;
+            this.oscillator = null;
+            this.gainNode = null;
+            this.currentNote = null;
+            this.isEnabled = false;
+        }
+
+        initialize(audioContext) {
+            this.audioContext = audioContext;
+
+            // Create master gain for volume control
+            this.masterGain = this.audioContext.createGain();
+            this.masterGain.gain.value = CONFIG.synthVolume / 100;
+            this.masterGain.connect(this.audioContext.destination);
+        }
+
+        setEnabled(enabled) {
+            this.isEnabled = enabled;
+            if (!enabled && this.oscillator) {
+                this.noteOff();
+            }
+        }
+
+        setVolume(volume) {
+            CONFIG.synthVolume = volume;
+            if (this.masterGain) {
+                this.masterGain.gain.value = volume / 100;
+            }
+        }
+
+        setWaveform(waveform) {
+            CONFIG.synthWaveform = waveform;
+            if (this.oscillator) {
+                this.oscillator.type = waveform;
+            }
+        }
+
+        noteOn(midiNote, velocity = 100) {
+            if (!this.isEnabled || !this.audioContext) return;
+
+            // If same note, just update (legato)
+            if (this.currentNote === midiNote && this.oscillator) {
+                return;
+            }
+
+            // Stop previous note
+            this.noteOff();
+
+            const frequency = midiToFrequency(midiNote);
+            const now = this.audioContext.currentTime;
+
+            // Create oscillator
+            this.oscillator = this.audioContext.createOscillator();
+            this.oscillator.type = CONFIG.synthWaveform;
+            this.oscillator.frequency.value = frequency;
+
+            // Create gain for envelope
+            this.gainNode = this.audioContext.createGain();
+            this.gainNode.gain.value = 0;
+
+            // Connect: oscillator -> envelope gain -> master gain -> destination
+            this.oscillator.connect(this.gainNode);
+            this.gainNode.connect(this.masterGain);
+
+            // Attack envelope
+            const velocityGain = (velocity / 127) * 0.5; // Max 0.5 to avoid clipping
+            this.gainNode.gain.setValueAtTime(0, now);
+            this.gainNode.gain.linearRampToValueAtTime(velocityGain, now + CONFIG.synthAttack);
+
+            this.oscillator.start(now);
+            this.currentNote = midiNote;
+        }
+
+        noteOff() {
+            if (!this.oscillator || !this.audioContext) return;
+
+            const now = this.audioContext.currentTime;
+
+            // Release envelope
+            this.gainNode.gain.cancelScheduledValues(now);
+            this.gainNode.gain.setValueAtTime(this.gainNode.gain.value, now);
+            this.gainNode.gain.linearRampToValueAtTime(0, now + CONFIG.synthRelease);
+
+            // Schedule oscillator stop
+            const osc = this.oscillator;
+            const gain = this.gainNode;
+
+            setTimeout(() => {
+                try {
+                    osc.stop();
+                    osc.disconnect();
+                    gain.disconnect();
+                } catch (e) {
+                    // Ignore if already stopped
+                }
+            }, CONFIG.synthRelease * 1000 + 50);
+
+            this.oscillator = null;
+            this.gainNode = null;
+            this.currentNote = null;
+        }
+
+        updatePitch(midiNote, cents) {
+            if (!this.oscillator || !this.isEnabled) return;
+
+            // Calculate frequency with cents offset
+            const baseFreq = midiToFrequency(midiNote);
+            const centsRatio = Math.pow(2, cents / 1200);
+            const actualFreq = baseFreq * centsRatio;
+
+            this.oscillator.frequency.value = actualFreq;
+        }
+
+        stop() {
+            this.noteOff();
+            if (this.masterGain) {
+                this.masterGain.disconnect();
+                this.masterGain = null;
+            }
+            this.audioContext = null;
+        }
+    }
+
+    // ==============================================
+    // AUDIO CAPTURE
+    // ==============================================
+    class AudioCapture {
+        constructor() {
+            this.audioContext = null;
+            this.stream = null;
+            this.source = null;
+            this.analyser = null;
+            this.buffer = null;
+        }
+
+        async initialize(deviceId = null) {
+            // Create audio context on user interaction
+            this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+            const constraints = {
+                audio: {
+                    echoCancellation: false,
+                    noiseSuppression: false,
+                    autoGainControl: false
+                }
+            };
+
+            if (deviceId) {
+                constraints.audio.deviceId = { exact: deviceId };
+            }
+
+            try {
+                this.stream = await navigator.mediaDevices.getUserMedia(constraints);
+                this.source = this.audioContext.createMediaStreamSource(this.stream);
+                this.analyser = this.audioContext.createAnalyser();
+                this.analyser.fftSize = CONFIG.bufferSize;
+                this.source.connect(this.analyser);
+
+                this.buffer = new Float32Array(this.analyser.fftSize);
+
+                return this.audioContext.sampleRate;
+            } catch (err) {
+                throw new Error(`Microphone access denied: ${err.message}`);
+            }
+        }
+
+        getBuffer() {
+            if (!this.analyser || !this.buffer) return null;
+            this.analyser.getFloatTimeDomainData(this.buffer);
+            return this.buffer;
+        }
+
+        async getDevices() {
+            try {
+                const devices = await navigator.mediaDevices.enumerateDevices();
+                return devices
+                    .filter(d => d.kind === 'audioinput')
+                    .map(d => ({
+                        id: d.deviceId,
+                        name: d.label || `Microphone ${d.deviceId.slice(0, 8)}`
+                    }));
+            } catch (err) {
+                return [];
+            }
+        }
+
+        stop() {
+            if (this.stream) {
+                this.stream.getTracks().forEach(track => track.stop());
+                this.stream = null;
+            }
+            if (this.source) {
+                this.source.disconnect();
+                this.source = null;
+            }
+            if (this.audioContext) {
+                this.audioContext.close();
+                this.audioContext = null;
+            }
+            this.analyser = null;
+            this.buffer = null;
+        }
+    }
+
+    // ==============================================
+    // VISUALIZER
+    // ==============================================
+    class Visualizer {
+        constructor(canvas) {
+            this.canvas = canvas;
+            this.ctx = canvas.getContext('2d');
+            this.resize();
+
+            // Handle resize
+            window.addEventListener('resize', () => this.resize());
+        }
+
+        resize() {
+            const rect = this.canvas.parentElement.getBoundingClientRect();
+            this.canvas.width = rect.width - 4; // Account for padding
+            this.canvas.height = 100;
+        }
+
+        drawWaveform(buffer) {
+            const ctx = this.ctx;
+            const width = this.canvas.width;
+            const height = this.canvas.height;
+
+            // Clear
+            ctx.fillStyle = '#21262d';
+            ctx.fillRect(0, 0, width, height);
+
+            if (!buffer) return;
+
+            // Draw center line
+            ctx.strokeStyle = '#30363d';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(0, height / 2);
+            ctx.lineTo(width, height / 2);
+            ctx.stroke();
+
+            // Draw waveform
+            ctx.strokeStyle = '#58a6ff';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+
+            const sliceWidth = width / buffer.length;
+            let x = 0;
+
+            for (let i = 0; i < buffer.length; i++) {
+                const v = (buffer[i] + 1) / 2;
+                const y = v * height;
+
+                if (i === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+                x += sliceWidth;
+            }
+
+            ctx.stroke();
+        }
+
+        clear() {
+            const ctx = this.ctx;
+            ctx.fillStyle = '#21262d';
+            ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+
+            // Draw center line
+            ctx.strokeStyle = '#30363d';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(0, this.canvas.height / 2);
+            ctx.lineTo(this.canvas.width, this.canvas.height / 2);
+            ctx.stroke();
+        }
+    }
+
+    // ==============================================
+    // SETTINGS PERSISTENCE
+    // ==============================================
+    class Settings {
+        static STORAGE_KEY = 'dubloon_settings';
+
+        static save() {
+            const settings = {
+                midiOutputId: document.getElementById('midiSelect').value,
+                micId: document.getElementById('micSelect').value,
+                channel: CONFIG.channel,
+                octaveShift: CONFIG.octaveShift,
+                sensitivity: CONFIG.sensitivity,
+                synthEnabled: CONFIG.synthEnabled,
+                synthVolume: CONFIG.synthVolume,
+                synthWaveform: CONFIG.synthWaveform
+            };
+            localStorage.setItem(this.STORAGE_KEY, JSON.stringify(settings));
+        }
+
+        static load() {
+            try {
+                const stored = localStorage.getItem(this.STORAGE_KEY);
+                if (!stored) return null;
+                return JSON.parse(stored);
+            } catch {
+                return null;
+            }
+        }
+
+        static apply(settings, midiOutputs, micDevices) {
+            if (!settings) return;
+
+            // Apply channel
+            if (settings.channel !== undefined) {
+                CONFIG.channel = settings.channel;
+                document.getElementById('channelSelect').value = settings.channel;
+            }
+
+            // Apply octave shift
+            if (settings.octaveShift !== undefined) {
+                CONFIG.octaveShift = settings.octaveShift;
+                document.getElementById('octaveValue').textContent =
+                    settings.octaveShift > 0 ? `+${settings.octaveShift}` : settings.octaveShift;
+            }
+
+            // Apply sensitivity
+            if (settings.sensitivity !== undefined) {
+                CONFIG.sensitivity = settings.sensitivity;
+                document.getElementById('sensitivity').value = settings.sensitivity;
+                document.getElementById('sensitivityValue').textContent = `${settings.sensitivity}%`;
+            }
+
+            // Apply MIDI output if still available
+            if (settings.midiOutputId && midiOutputs.some(o => o.id === settings.midiOutputId)) {
+                document.getElementById('midiSelect').value = settings.midiOutputId;
+            }
+
+            // Apply mic if still available
+            if (settings.micId && micDevices.some(d => d.id === settings.micId)) {
+                document.getElementById('micSelect').value = settings.micId;
+            }
+
+            // Apply synth settings
+            if (settings.synthEnabled !== undefined) {
+                CONFIG.synthEnabled = settings.synthEnabled;
+                document.getElementById('synthEnabled').checked = settings.synthEnabled;
+                document.getElementById('synthControls').classList.toggle('visible', settings.synthEnabled);
+            }
+
+            if (settings.synthVolume !== undefined) {
+                CONFIG.synthVolume = settings.synthVolume;
+                document.getElementById('synthVolume').value = settings.synthVolume;
+                document.getElementById('synthVolumeValue').textContent = `${settings.synthVolume}%`;
+            }
+
+            if (settings.synthWaveform !== undefined) {
+                CONFIG.synthWaveform = settings.synthWaveform;
+                document.getElementById('synthWaveform').value = settings.synthWaveform;
+            }
+        }
+    }
+
+    // ==============================================
+    // MAIN APPLICATION
+    // ==============================================
+    class Dubloon {
+        constructor() {
+            this.audioCapture = new AudioCapture();
+            this.yinDetector = null;
+            this.noteTracker = new NoteTracker();
+            this.midiOutput = new MidiOutput();
+            this.synthesizer = new Synthesizer();
+            this.visualizer = null;
+            this.isRunning = false;
+            this.processInterval = null;
+            this.lastProcessTime = 0;
+        }
+
+        async initialize() {
+            // Initialize visualizer
+            this.visualizer = new Visualizer(document.getElementById('waveform'));
+            this.visualizer.clear();
+
+            // Populate MIDI channel dropdown
+            const channelSelect = document.getElementById('channelSelect');
+            for (let i = 1; i <= 16; i++) {
+                const option = document.createElement('option');
+                option.value = i - 1;
+                option.textContent = `Channel ${i}`;
+                channelSelect.appendChild(option);
+            }
+
+            // Initialize MIDI
+            try {
+                const outputs = await this.midiOutput.initialize();
+                this.populateMidiOutputs(outputs);
+            } catch (err) {
+                this.showError(err.message);
+            }
+
+            // Get microphone devices (requires permission first time)
+            try {
+                // Request permission to enumerate devices with labels
+                await navigator.mediaDevices.getUserMedia({ audio: true })
+                    .then(stream => stream.getTracks().forEach(t => t.stop()));
+
+                const devices = await this.audioCapture.getDevices();
+                this.populateMicDevices(devices);
+
+                // Load saved settings
+                const savedSettings = Settings.load();
+                Settings.apply(savedSettings, this.midiOutput.getOutputs(), devices);
+            } catch (err) {
+                console.warn('Could not enumerate audio devices:', err);
+            }
+
+            // Setup event listeners
+            this.setupEventListeners();
+
+            this.setStatus('ready', 'Ready');
+        }
+
+        populateMidiOutputs(outputs) {
+            const select = document.getElementById('midiSelect');
+            select.innerHTML = '<option value="">Select MIDI device...</option>';
+
+            outputs.forEach(output => {
+                const option = document.createElement('option');
+                option.value = output.id;
+                option.textContent = output.name;
+                select.appendChild(option);
+            });
+        }
+
+        populateMicDevices(devices) {
+            const select = document.getElementById('micSelect');
+            select.innerHTML = '<option value="">Default microphone</option>';
+
+            devices.forEach(device => {
+                const option = document.createElement('option');
+                option.value = device.id;
+                option.textContent = device.name;
+                select.appendChild(option);
+            });
+        }
+
+        setupEventListeners() {
+            // Start button
+            document.getElementById('startBtn').addEventListener('click', () => this.start());
+
+            // Stop button
+            document.getElementById('stopBtn').addEventListener('click', () => this.stop());
+
+            // Panic button
+            document.getElementById('panicBtn').addEventListener('click', () => {
+                this.midiOutput.allNotesOff();
+                this.synthesizer.noteOff();
+                this.noteTracker.reset();
+                this.updateNoteDisplay(null, null, 0);
+            });
+
+            // MIDI output selection
+            document.getElementById('midiSelect').addEventListener('change', (e) => {
+                this.midiOutput.selectOutput(e.target.value);
+                Settings.save();
+            });
+
+            // MIDI channel selection
+            document.getElementById('channelSelect').addEventListener('change', (e) => {
+                CONFIG.channel = parseInt(e.target.value);
+                Settings.save();
+            });
+
+            // Octave buttons
+            document.getElementById('octaveDown').addEventListener('click', () => {
+                if (CONFIG.octaveShift > -3) {
+                    CONFIG.octaveShift--;
+                    this.updateOctaveDisplay();
+                    Settings.save();
+                }
+            });
+
+            document.getElementById('octaveUp').addEventListener('click', () => {
+                if (CONFIG.octaveShift < 3) {
+                    CONFIG.octaveShift++;
+                    this.updateOctaveDisplay();
+                    Settings.save();
+                }
+            });
+
+            // Sensitivity slider
+            document.getElementById('sensitivity').addEventListener('input', (e) => {
+                CONFIG.sensitivity = parseInt(e.target.value);
+                document.getElementById('sensitivityValue').textContent = `${CONFIG.sensitivity}%`;
+            });
+
+            document.getElementById('sensitivity').addEventListener('change', () => {
+                Settings.save();
+            });
+
+            // Microphone selection
+            document.getElementById('micSelect').addEventListener('change', () => {
+                Settings.save();
+                // If running, restart with new device
+                if (this.isRunning) {
+                    this.stop();
+                    this.start();
+                }
+            });
+
+            // MIDI state changes
+            window.addEventListener('midiStateChange', () => {
+                const outputs = this.midiOutput.getOutputs();
+                this.populateMidiOutputs(outputs);
+            });
+
+            // Synth enable toggle
+            document.getElementById('synthEnabled').addEventListener('change', (e) => {
+                CONFIG.synthEnabled = e.target.checked;
+                this.synthesizer.setEnabled(e.target.checked);
+                document.getElementById('synthControls').classList.toggle('visible', e.target.checked);
+                Settings.save();
+            });
+
+            // Synth waveform selection
+            document.getElementById('synthWaveform').addEventListener('change', (e) => {
+                this.synthesizer.setWaveform(e.target.value);
+                Settings.save();
+            });
+
+            // Synth volume slider
+            document.getElementById('synthVolume').addEventListener('input', (e) => {
+                const volume = parseInt(e.target.value);
+                this.synthesizer.setVolume(volume);
+                document.getElementById('synthVolumeValue').textContent = `${volume}%`;
+            });
+
+            document.getElementById('synthVolume').addEventListener('change', () => {
+                Settings.save();
+            });
+        }
+
+        updateOctaveDisplay() {
+            const display = CONFIG.octaveShift > 0 ? `+${CONFIG.octaveShift}` : CONFIG.octaveShift.toString();
+            document.getElementById('octaveValue').textContent = display;
+        }
+
+        async start() {
+            if (this.isRunning) return;
+
+            try {
+                const micId = document.getElementById('micSelect').value || null;
+                const sampleRate = await this.audioCapture.initialize(micId);
+
+                this.yinDetector = new YinDetector(sampleRate, CONFIG.bufferSize);
+                this.noteTracker.reset();
+
+                // Initialize synthesizer with the same audio context
+                this.synthesizer.initialize(this.audioCapture.audioContext);
+                this.synthesizer.setEnabled(CONFIG.synthEnabled);
+
+                // Select MIDI output
+                const midiId = document.getElementById('midiSelect').value;
+                if (midiId) {
+                    this.midiOutput.selectOutput(midiId);
+                }
+
+                this.isRunning = true;
+                this.lastProcessTime = performance.now();
+
+                // Start processing loop
+                this.processInterval = setInterval(() => this.processAudio(), CONFIG.processInterval);
+
+                // Update UI
+                document.getElementById('startBtn').disabled = true;
+                document.getElementById('stopBtn').disabled = false;
+                this.setStatus('running', 'Running');
+                this.hideError();
+
+            } catch (err) {
+                this.showError(err.message);
+                this.setStatus('error', 'Error');
+            }
+        }
+
+        stop() {
+            if (!this.isRunning) return;
+
+            // Stop processing
+            if (this.processInterval) {
+                clearInterval(this.processInterval);
+                this.processInterval = null;
+            }
+
+            // Send note off if needed
+            if (this.noteTracker.currentNote !== null) {
+                this.midiOutput.sendNoteOff(this.noteTracker.currentNote);
+            }
+            this.midiOutput.resetPitchBend();
+
+            // Stop synthesizer
+            this.synthesizer.stop();
+
+            this.audioCapture.stop();
+            this.noteTracker.reset();
+            this.isRunning = false;
+
+            // Update UI
+            document.getElementById('startBtn').disabled = false;
+            document.getElementById('stopBtn').disabled = true;
+            this.setStatus('ready', 'Ready');
+            this.updateNoteDisplay(null, null, 0);
+            this.visualizer.clear();
+        }
+
+        processAudio() {
+            const startTime = performance.now();
+            const buffer = this.audioCapture.getBuffer();
+
+            if (!buffer) return;
+
+            // Draw waveform
+            this.visualizer.drawWaveform(buffer);
+
+            // Detect pitch
+            const { frequency, confidence } = this.yinDetector.detect(buffer);
+
+            // Calculate velocity from amplitude
+            const rms = calculateRMS(buffer);
+            const db = rmsToDb(rms);
+            const velocity = CONFIG.velocityFromAmplitude
+                ? Math.round(Math.max(1, Math.min(127, (db + 50) * 2.5)))
+                : CONFIG.baseVelocity;
+
+            // Update note tracker
+            const timestamp = performance.now();
+            const event = this.noteTracker.update(frequency, confidence, timestamp);
+
+            // Handle MIDI and synth events
+            if (event) {
+                switch (event.type) {
+                    case 'noteOn':
+                        this.midiOutput.resetPitchBend();
+                        this.midiOutput.sendNoteOn(event.note, velocity);
+                        this.midiOutput.sendPitchBend(event.cents);
+                        this.synthesizer.noteOn(event.note, velocity);
+                        this.updateNoteDisplay(event.note, frequency, event.cents);
+                        break;
+
+                    case 'noteOff':
+                        this.midiOutput.sendNoteOff(event.note);
+                        this.midiOutput.resetPitchBend();
+                        this.synthesizer.noteOff();
+                        this.updateNoteDisplay(null, null, 0);
+                        break;
+
+                    case 'noteChange':
+                        this.midiOutput.sendNoteOff(event.oldNote);
+                        this.midiOutput.resetPitchBend();
+                        this.midiOutput.sendNoteOn(event.newNote, velocity);
+                        this.midiOutput.sendPitchBend(event.cents);
+                        this.synthesizer.noteOn(event.newNote, velocity);
+                        this.updateNoteDisplay(event.newNote, frequency, event.cents);
+                        break;
+
+                    case 'pitchBend':
+                        this.midiOutput.sendPitchBend(event.cents);
+                        this.synthesizer.updatePitch(event.note, event.cents);
+                        // Update cents display
+                        this.updateCentsDisplay(event.cents);
+                        break;
+                }
+            }
+
+            // Update latency display
+            const processTime = performance.now() - startTime;
+            document.getElementById('latency').textContent = `${processTime.toFixed(1)}ms`;
+        }
+
+        updateNoteDisplay(midiNote, frequency, cents) {
+            const noteNameEl = document.getElementById('noteName');
+            const frequencyEl = document.getElementById('frequency');
+            const midiNoteEl = document.getElementById('midiNote');
+
+            if (midiNote === null) {
+                noteNameEl.textContent = '--';
+                noteNameEl.classList.remove('active');
+                frequencyEl.textContent = '--- Hz';
+                midiNoteEl.textContent = 'MIDI --';
+            } else {
+                noteNameEl.textContent = midiToNoteName(midiNote);
+                noteNameEl.classList.add('active');
+                frequencyEl.textContent = `${frequency.toFixed(1)} Hz`;
+                midiNoteEl.textContent = `MIDI ${midiNote}`;
+            }
+
+            this.updateCentsDisplay(cents);
+        }
+
+        updateCentsDisplay(cents) {
+            const centsEl = document.getElementById('cents');
+            const indicatorEl = document.getElementById('centsIndicator');
+
+            if (cents === 0 || this.noteTracker.currentNote === null) {
+                centsEl.textContent = '-- cents';
+                indicatorEl.className = 'cents-indicator';
+            } else {
+                const sign = cents > 0 ? '+' : '';
+                centsEl.textContent = `${sign}${cents} cents`;
+
+                indicatorEl.classList.remove('flat', 'sharp', 'in-tune');
+                if (Math.abs(cents) <= 10) {
+                    indicatorEl.classList.add('in-tune');
+                } else if (cents < 0) {
+                    indicatorEl.classList.add('flat');
+                } else {
+                    indicatorEl.classList.add('sharp');
+                }
+            }
+        }
+
+        setStatus(state, text) {
+            const dot = document.getElementById('statusDot');
+            const textEl = document.getElementById('statusText');
+
+            dot.className = 'status-dot';
+            if (state) {
+                dot.classList.add(state);
+            }
+            textEl.textContent = text;
+        }
+
+        showError(message) {
+            const banner = document.getElementById('errorBanner');
+            banner.textContent = message;
+            banner.classList.add('visible');
+        }
+
+        hideError() {
+            const banner = document.getElementById('errorBanner');
+            banner.classList.remove('visible');
+        }
+    }
+
+    // ==============================================
+    // INITIALIZATION
+    // ==============================================
+    document.addEventListener('DOMContentLoaded', () => {
+        const app = new Dubloon();
+        app.initialize();
+    });
+    </script>
+</body>
+</html>

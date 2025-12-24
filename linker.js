@@ -159,21 +159,38 @@ function startListeners() {
     // INVENTORY SYNC
     // Use sanitized username for inventory paths
     const sanitizedUsername = sanitizeUsername(username);
-    
+    console.log("DIRS:", inventoryDirs)
+
+    // Helper function to check if a directory path is in allowed inventory_dirs
+    function isAllowedDirectory(dirPath) {
+        // Normalize the path (remove leading/trailing slashes, convert backslashes)
+        const normalizedPath = dirPath.replace(/^inventory[\/\\]/, '').replace(/\\/g, '/');
+        return inventoryDirs.some(allowedDir => {
+            const normalizedAllowed = allowedDir.replace(/\\/g, '/');
+            return normalizedPath.startsWith(normalizedAllowed);
+        });
+    }
+
     inventoryDirs.forEach(dir => {
         let refPath = `inventory/${dir}`;
         console.log(`Listening to inventory: ${refPath}`);
         const inventoryRef = ref(database, refPath);
-        console.log(refPath)
         onValue(inventoryRef, (snapshot) => {
             const data = snapshot.val();
             console.log(`Inventory updated: ${refPath}: ${data}`);
             if(!data) return;
             Object.values(data).forEach((update) => {
-                console.log('update', update)
+                // Determine target directory
+                let dir = update.importedFrom || `inventory/${update.author}/${update.folder}`;
+
+                // Skip if directory is not in allowed list
+                if (!isAllowedDirectory(dir)) {
+                    console.log(`Skipping item from non-configured directory: ${dir}/${update.name}`);
+                    return;
+                }
+
                 if(update.itemType === "script"){
                     let content = update.data;
-                    let dir = update.importedFrom || `inventory/${update.author}/${update.folder}`;
                     let name = update.name;
                     if(!name.endsWith(".js")){
                         name = name+".js";
@@ -185,7 +202,6 @@ function startListeners() {
 
                 if(update.itemType === "markdown"){
                     let content = update.data;
-                    let dir = update.importedFrom || `inventory/${update.author}/${update.folder}`;
                     let name = update.name;
                     if(!name.endsWith(".md")){
                         name = name+".md";
@@ -196,9 +212,7 @@ function startListeners() {
                 }
 
                 if(update.itemType === "entity"){
-                    console.log(update)
                     let content = update;
-                    let dir = update.importedFrom || `inventory/${update.author}/${update.folder}`;
                     let name = update.name;
                     if(!name.endsWith(".json")){
                         name = name+".json";
@@ -207,9 +221,8 @@ function startListeners() {
                     fs.writeFileSync(filePath, JSON.stringify(content, null, 2), 'utf8');
                     console.log(`updated entity (firebase)=>: ${filePath}: at ${new Date().toISOString()}`)
                 }
-                console.log("\n\n\n")
             });
-            
+
         }, (error) => {
             console.error('Error listening to database:', error);
         });

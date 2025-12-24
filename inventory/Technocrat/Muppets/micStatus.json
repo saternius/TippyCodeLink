@@ -1,0 +1,99 @@
+{
+  "author": "Technocrat",
+  "created": 1765033700070,
+  "data": {
+    "Components": {
+      "AudioSource_3221": {
+        "bypassEffects": false,
+        "bypassListenerEffects": false,
+        "bypassReverbZones": false,
+        "loop": false,
+        "mute": false,
+        "pitch": 1,
+        "playOnAwake": true,
+        "spatialBlend": 1,
+        "volume": 1
+      },
+      "BoxCollider_2562": {
+        "center": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "isTrigger": false,
+        "size": {
+          "x": 1,
+          "y": 1,
+          "z": 1
+        }
+      },
+      "Box_7678": {
+        "depth": 1,
+        "height": 1,
+        "width": 1
+      },
+      "Material_3662": {
+        "color": {
+          "a": 1,
+          "b": 0.08235294117647059,
+          "g": 0.08235294117647059,
+          "r": 0.9411764705882353
+        },
+        "generateMipMaps": true,
+        "shaderName": "Standard",
+        "side": 0,
+        "texture": ""
+      }
+    },
+    "Entity": {
+      "micStatus": {
+        "__meta": {
+          "active": true,
+          "components": {
+            "AudioSource_3221": true,
+            "BoxCollider_2562": true,
+            "Box_7678": true,
+            "ColliderEvents_3663": true,
+            "Material_3662": true
+          },
+          "layer": 5,
+          "localPosition": {
+            "x": 0,
+            "y": 1,
+            "z": 4
+          },
+          "localRotation": {
+            "w": 1,
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "localScale": {
+            "x": 0.1,
+            "y": 0.1,
+            "z": 0.1
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "rotation": {
+            "w": 1,
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "uuid": 534338365263
+        }
+      }
+    }
+  },
+  "description": "",
+  "folder": "Muppets",
+  "icon": "📦",
+  "itemType": "entity",
+  "last_used": 1765033700070,
+  "name": "micStatus",
+  "syncedAt": 1765033700863
+}

@@ -1,0 +1,89 @@
+{
+  "author": "Technocrat",
+  "created": 1765209227790,
+  "data": {
+    "Components": {
+      "ScriptAsset_71203": {
+        "author": "Technocrat",
+        "data": "console.log(\"newbie2\") \n\nlet V = (attr) => {\n    if(!this.vars[attr]) return null;\n    return this.vars[attr].value;\n}\n// this.default = {}\n\n// Object.entries(this.default).forEach(([key, val])=>{\n//     if(!this.vars[key]) this.vars[key] = val\n// })\n\nlet eyes = null; \nlet dialogue = null;\nlet notificationAudio = null;\nlet breathingInterval = null;\nlet doc = null;\nlet antennaMaterial = null;\nlet openEyes = null;\nlet shutEyes = null;\nlet blink = ()=>{\n    if(!V(\"enabled\")) return;\n    openEyes._set(\"active\", false)\n    shutEyes._set(\"active\", true)\n    setTimeout(()=>{\n        openEyes._set(\"active\", true)\n        shutEyes._set(\"active\", false)\n        setTimeout(blink, 5000 + Math.random() * 10000)\n    }, 160)\n}\n\nlet closeEyes = ()=>{\n    openEyes._set(\"active\", false)\n    shutEyes._set(\"active\", true)\n}\n\nthis.onStart = async ()=>{\n    eyes = this._entity.GetChild(\"Eyes\")\n    eyes._set(\"localRotation\", {\n        x: 0,\n        y: 0,\n        z: 0,\n        w: 1\n    })\n    eyes._set(\"localPosition\", {\n        x: 0,\n        y: 1.5,\n        z: 0\n    })\n\n    shutEyes = eyes.GetChild(\"Shut\")\n    openEyes = eyes.GetChild(\"Open\")\n    openEyes._set(\"active\", true)\n    shutEyes._set(\"active\", false)\n\n    blink();\n\n\n    let offset = Math.random() * 2000;\n    breathingInterval = setInterval(()=>{\n        let ts = (Date.now() + offset) / 1000;\n        eyes._set(\"localPosition\", {\n            x: 0,\n            y: 1.5 + Math.sin(ts) * 0.0075,\n            z: 0\n        })\n    }, 60)\n\n    \n\n\n    dialogue = this._entity.GetChild(\"Dialogue\")\n    notificationAudio = dialogue.getComponent(\"AudioSource\")\n    Object.values(dialogue._bs.components).forEach(c=>{\n        if(c.componentType === BS.ComponentType.BanterUI){\n            c.Destroy()\n        }\n    })\n    doc = new BS.BanterUI(new BS.Vector2(512,512), false);\n    await dialogue._bs.AddComponent(doc);\n    //doc.SetBackgroundColor(new BS.Vector4(0.5, 0.31, 0.89, 1));\n    window.dialogueUI = doc;\n    renderDialogue();\n\n\n    antennaMaterial = this._entity.GetChild(\"Antenna\").GetChild(\"Bulb\").GetComponent(\"Material\")\n    log(\"MUPPET\", \"antennaMaterial\", antennaMaterial)\n\n    this._entity._bs.On(\"click\", e => {\n        notificationAudio._bs.PlayOneShotFromUrl(\"https://app.tippy.dev/assets/audio/tick.mp3\")\n        let val = (typeof V(\"enabled\") === \"string\") ? V(\"enabled\") === \"true\" : V(\"enabled\")\n        log(\"MUPPET\", \"click\", val)\n        this._component.SetVar(\"enabled\",!val)\n    })\n\n}\n\nlet lastDialogue = \"\";\nthis.onVarChange = (varName, snap)=>{\n    let value = snap.value\n    log(\"MUPPET\", \"onVarChange\", varName, value)\n    if(varName === \"dialogue\"){\n        if(V(\"dialogue\").length > lastDialogue.length){\n            if(V(\"chatSfx\").length > 0){\n                if(!V(\"dialogue\").endsWith(\"...\")){\n                    notificationAudio._bs.PlayOneShotFromUrl(V(\"chatSfx\"))\n                }\n            }\n        }\n        renderDialogue();\n        lastDialogue = V(\"dialogue\");\n    }\n\n    if(varName === \"listeningTo\"){\n        if(V(\"listeningTo\").length > 0){\n            antennaMaterial._set('color', {'r': 0, 'g': 1, 'b': 0, 'a': 1})\n        }else{\n            antennaMaterial._set('color', {'r': 0, 'g': 0, 'b': 0, 'a': 1})\n        }\n    }\n\n    if(varName === \"gazeRot\"){\n        if(V(\"enabled\")){\n            targetXRot = V(\"gazeRot\");\n        }\n    }\n\n    if(varName === \"enabled\"){\n        if(V(\"enabled\")){\n            log(\"MUPPET\", \"starting blinking\")\n            blink();\n        }else{\n            log(\"MUPPET\", \"stopping blinking\")\n            closeEyes();\n        }\n    }\n}\n\nlet container = null;\nlet renderDialogue = ()=>{\n    if(container){\n        container.Destroy();\n    }\n\n    let bubbles = V(\"dialogue\").split(\"--------\").filter(b=>b.trim() !== \"\");\n    if(bubbles.length === 0) return;\n    log(\"MUPPET\", \"bubbles\", bubbles)\n\n    container = doc.CreateVisualElement();\n    container.style.display = \"flex\";\n    container.style.flexDirection = \"column\";\n    container.style.height = \"100%\";\n    container.style.width = \"100%\";\n    container.style.justifyContent = \"flex-end\";\n\n\n    \n    bubbles.forEach(bubble => {\n        let content = doc.CreateLabel();\n        content.style.backgroundColor = \"rgba(0, 0, 0, 0.5)\";\n        content.style.padding = \"10px\";\n        content.style.borderRadius = \"5px\";\n        content.style.color = \"white\";\n        content.style.fontSize=\"24px\";\n        content.style.flexWrap = 'wrap'\n        content.style.whiteSpace = \"normal\"\n        content.style.minWidth = \"0px\"\n        content.style.maxWidth = '100%'\n        content.style.textAlign = \"center\"\n        content.style.flexShrink = 1;\n        content.text = bubble;\n        container.AppendChild(content);\n    })\n\n}\n\n\nlet targetXRot = 0;\nlet xRot = 0;\nthis.onUpdate = ()=>{\n    let delta = (targetXRot - xRot)/10;\n    xRot += delta;\n    this._entity._set(\"localRotation\", {\n        x: xRot,\n        y: 0,\n        z: 0\n    })\n}\n\nthis.onDestroy = async ()=>{\n    this._entity._bs.listeners.get(\"click\").clear();\n    clearInterval(breathingInterval)\n    closeEyes();\n    if(doc){\n        try{\n            await doc.Destroy();\n        }catch(e){\n            log(\"MUPPET\", \"could not destroy dialogue UI 🤷‍♂️\", e)\n        }\n        \n    }\n}\n",
+        "name": "muppet.js",
+        "vars": {
+          "chatSfx": {
+            "type": "string",
+            "value": ""
+          },
+          "dialogue": {
+            "type": "string",
+            "value": ""
+          },
+          "enabled": {
+            "type": "boolean",
+            "value": false
+          },
+          "gazeRot": {
+            "type": "number",
+            "value": 0
+          },
+          "listeningTo": {
+            "type": "string",
+            "value": ""
+          },
+          "muppetName": {
+            "type": "string",
+            "value": ""
+          },
+          "thinking": {
+            "type": "boolean",
+            "value": false
+          }
+        }
+      }
+    },
+    "Entity": {
+      "muppet_js": {
+        "__meta": {
+          "active": true,
+          "components": {
+            "ScriptAsset_71203": true
+          },
+          "layer": 0,
+          "localPosition": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "localRotation": {
+            "w": 1,
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "localScale": {
+            "x": 1,
+            "y": 1,
+            "z": 1
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "rotation": {
+            "w": 1,
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "uuid": 1926691966416
+        }
+      }
+    }
+  },
+  "description": "",
+  "folder": "Muppets",
+  "icon": "📦",
+  "itemType": "entity",
+  "last_used": 1765209227790,
+  "name": "muppet_js",
+  "syncedAt": 1765209226354
+}

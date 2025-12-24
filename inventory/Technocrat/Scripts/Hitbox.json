@@ -1,0 +1,173 @@
+{
+  "author": "Technocrat",
+  "created": 1765954409967,
+  "data": {
+    "Components": {
+      "BoxCollider_83580": {
+        "center": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "isTrigger": true,
+        "size": {
+          "x": 1,
+          "y": 1,
+          "z": 1
+        }
+      },
+      "BoxCollider_8841": {
+        "center": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "isTrigger": false,
+        "size": {
+          "x": 1,
+          "y": 1,
+          "z": 1
+        }
+      },
+      "Box_40564": {
+        "depth": 1,
+        "height": 1,
+        "width": 1
+      },
+      "Material_30790": {
+        "color": {
+          "a": 0.5,
+          "b": 0.027450980392156862,
+          "g": 0.9882352941176471,
+          "r": 0.11764705882352941
+        },
+        "generateMipMaps": true,
+        "shaderName": "Unlit/DiffuseTransparent",
+        "side": 0,
+        "texture": ""
+      },
+      "Rigidbody_86428": {
+        "angularDrag": 5000,
+        "angularVelocity": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "centerOfMass": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "collisionDetectionMode": 0,
+        "drag": 40,
+        "freezePositionX": false,
+        "freezePositionY": false,
+        "freezePositionZ": false,
+        "freezeRotationX": false,
+        "freezeRotationY": false,
+        "freezeRotationZ": false,
+        "isKinematic": false,
+        "mass": 1,
+        "useGravity": false,
+        "velocity": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        }
+      },
+      "ScriptRunner_2243": {
+        "file": "Hitbox.js",
+        "hotreload": true,
+        "name": "myScript",
+        "owner": "global"
+      }
+    },
+    "Entity": {
+      "Hitbox": {
+        "Collider": {
+          "__meta": {
+            "active": true,
+            "components": {
+              "BoxCollider_8841": true
+            },
+            "layer": 0,
+            "localPosition": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "localRotation": {
+              "w": 1,
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "localScale": {
+              "x": 1,
+              "y": 1,
+              "z": 1
+            },
+            "position": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "rotation": {
+              "w": 1,
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "uuid": 2410023890075
+          }
+        },
+        "__meta": {
+          "active": true,
+          "components": {
+            "BoxCollider_83580": true,
+            "Box_40564": true,
+            "Material_30790": true,
+            "Rigidbody_86428": true,
+            "ScriptRunner_2243": true
+          },
+          "layer": 5,
+          "localPosition": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "localRotation": {
+            "w": 1,
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "localScale": {
+            "x": 1,
+            "y": 1,
+            "z": 1
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "rotation": {
+            "w": 1,
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "uuid": 153085621708
+        }
+      }
+    }
+  },
+  "description": "",
+  "folder": "Scripts",
+  "icon": "📦",
+  "itemType": "entity",
+  "last_used": 1765954409967,
+  "name": "Hitbox",
+  "syncedAt": 1765954410060
+}

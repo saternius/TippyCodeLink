@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shell Mirror</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            background: #1a1a2e;
+            color: #eee;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 15px;
+            background: #16213e;
+            border-radius: 8px 8px 0 0;
+            border-bottom: 1px solid #0f3460;
+        }
+        .header h1 {
+            font-size: 16px;
+            color: #e94560;
+        }
+        .status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 12px;
+        }
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #666;
+        }
+        .status-dot.running { background: #4ade80; animation: pulse 1s infinite; }
+        .status-dot.completed { background: #60a5fa; }
+        .status-dot.error { background: #f87171; }
+        .status-dot.interrupted { background: #fbbf24; }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .meta-info {
+            font-size: 11px;
+            color: #888;
+        }
+        .terminal {
+            flex: 1;
+            background: #0d1117;
+            overflow-y: auto;
+            padding: 15px;
+            font-size: 14px;
+            line-height: 1.5;
+            border-left: 1px solid #0f3460;
+            border-right: 1px solid #0f3460;
+        }
+        .terminal::-webkit-scrollbar {
+            width: 8px;
+        }
+        .terminal::-webkit-scrollbar-track {
+            background: #0d1117;
+        }
+        .terminal::-webkit-scrollbar-thumb {
+            background: #333;
+            border-radius: 4px;
+        }
+        .line {
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+        /* ANSI color classes */
+        .ansi-black { color: #000; }
+        .ansi-red { color: #e74c3c; }
+        .ansi-green { color: #2ecc71; }
+        .ansi-yellow { color: #f1c40f; }
+        .ansi-blue { color: #3498db; }
+        .ansi-magenta { color: #9b59b6; }
+        .ansi-cyan { color: #1abc9c; }
+        .ansi-white { color: #ecf0f1; }
+        .ansi-bright-black { color: #7f8c8d; }
+        .ansi-bright-red { color: #ff6b6b; }
+        .ansi-bright-green { color: #4ade80; }
+        .ansi-bright-yellow { color: #ffd93d; }
+        .ansi-bright-blue { color: #60a5fa; }
+        .ansi-bright-magenta { color: #c084fc; }
+        .ansi-bright-cyan { color: #22d3d3; }
+        .ansi-bright-white { color: #ffffff; }
+        .ansi-bg-black { background-color: #000; }
+        .ansi-bg-red { background-color: #e74c3c; }
+        .ansi-bg-green { background-color: #2ecc71; }
+        .ansi-bg-yellow { background-color: #f1c40f; }
+        .ansi-bg-blue { background-color: #3498db; }
+        .ansi-bg-magenta { background-color: #9b59b6; }
+        .ansi-bg-cyan { background-color: #1abc9c; }
+        .ansi-bg-white { background-color: #ecf0f1; }
+        .ansi-bold { font-weight: bold; }
+        .ansi-dim { opacity: 0.7; }
+        .ansi-italic { font-style: italic; }
+        .ansi-underline { text-decoration: underline; }
+        .ansi-strikethrough { text-decoration: line-through; }
+        .input-area {
+            display: flex;
+            background: #16213e;
+            border-radius: 0 0 8px 8px;
+            border-top: 1px solid #0f3460;
+        }
+        .prompt {
+            padding: 12px 15px;
+            color: #4ade80;
+            font-weight: bold;
+        }
+        #stdin-input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: #eee;
+            font-family: inherit;
+            font-size: 14px;
+            padding: 12px 0;
+            outline: none;
+        }
+        #stdin-input::placeholder {
+            color: #555;
+        }
+        .send-btn {
+            padding: 12px 20px;
+            background: #e94560;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-family: inherit;
+            font-weight: bold;
+            transition: background 0.2s;
+        }
+        .send-btn:hover {
+            background: #ff6b6b;
+        }
+        .send-btn:disabled {
+            background: #444;
+            cursor: not-allowed;
+        }
+        .config-panel {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #16213e;
+            border-radius: 8px;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        .config-panel label {
+            font-size: 14px;
+            color: #888;
+        }
+        .config-panel input {
+            padding: 8px 12px;
+            background: #0d1117;
+            border: 1px solid #0f3460;
+            border-radius: 4px;
+            color: #eee;
+            font-family: inherit;
+            font-size: 14px;
+        }
+        .config-panel button {
+            padding: 8px 16px;
+            background: #4ade80;
+            color: #0d1117;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .config-panel button:hover {
+            background: #22c55e;
+        }
+        .disconnected {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="config-panel">
+        <label>Shell Name:</label>
+        <input type="text" id="shell-name" placeholder="e.g., claude" value="">
+        <button onclick="connect()">Connect</button>
+    </div>
+
+    <div class="header">
+        <h1 id="title">Shell Mirror</h1>
+        <div class="status">
+            <span class="meta-info" id="command-info"></span>
+            <div class="status-dot" id="status-dot"></div>
+            <span id="status-text">Disconnected</span>
+        </div>
+    </div>
+
+    <div class="terminal" id="terminal">
+        <div class="disconnected">Enter a shell name and click Connect</div>
+    </div>
+
+    <div class="input-area">
+        <span class="prompt">$</span>
+        <input type="text" id="stdin-input" placeholder="Type command and press Enter..." disabled>
+        <button class="send-btn" id="send-btn" onclick="sendInput()" disabled>Send</button>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDKMwZ7_tmb5HHMd7aNj_tT_VwqBKN6yCg",
+            authDomain: "welp-c0e8d.firebaseapp.com",
+            databaseURL: "https://welp-c0e8d-default-rtdb.firebaseio.com",
+            projectId: "welp-c0e8d",
+            storageBucket: "welp-c0e8d.appspot.com",
+            messagingSenderId: "1018564206316",
+            appId: "1:1018564206316:web:placeholder"
+        };
+
+        // Initialize Firebase
+        console.log('[INIT] Initializing Firebase...');
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+        console.log('[INIT] Firebase initialized successfully');
+
+        let shellRef = null;
+        let linesRef = null;
+        let stdinRef = null;
+        let stdinIndex = 0;
+        let autoScroll = true;
+
+        const terminal = document.getElementById('terminal');
+        const stdinInput = document.getElementById('stdin-input');
+        const sendBtn = document.getElementById('send-btn');
+        const statusDot = document.getElementById('status-dot');
+        const statusText = document.getElementById('status-text');
+        const commandInfo = document.getElementById('command-info');
+        const titleEl = document.getElementById('title');
+
+        // Get shell name from URL params if present
+        const urlParams = new URLSearchParams(window.location.search);
+        const urlShellName = urlParams.get('name');
+        console.log('[INIT] URL shell name:', urlShellName);
+        if (urlShellName) {
+            document.getElementById('shell-name').value = urlShellName;
+            // Auto-connect after page load
+            console.log('[INIT] Will auto-connect on page load');
+            window.addEventListener('load', () => {
+                console.log('[INIT] Page loaded, scheduling auto-connect');
+                setTimeout(() => {
+                    console.log('[INIT] Auto-connect timer fired');
+                    connect();
+                }, 100);
+            });
+        }
+
+        console.log('[INIT] Script initialization complete');
+
+        function connect() {
+            console.log('[CONNECT] connect() called');
+            const shellName = document.getElementById('shell-name').value.trim();
+            if (!shellName) {
+                alert('Please enter a shell name');
+                return;
+            }
+            console.log('[CONNECT] Shell name:', shellName);
+
+            // Clean up previous listeners
+            console.log('[CONNECT] Cleaning up previous listeners...');
+            if (shellRef) {
+                shellRef.off();
+            }
+            if (linesRef) {
+                linesRef.off();
+            }
+            console.log('[CONNECT] Listeners cleaned up');
+
+            // Clear terminal
+            terminal.innerHTML = '';
+            stdinIndex = 0;
+
+            // Update URL
+            const newUrl = `${window.location.pathname}?name=${encodeURIComponent(shellName)}`;
+            window.history.pushState({}, '', newUrl);
+
+            // Set up references
+            console.log('[CONNECT] Setting up Firebase references...');
+            shellRef = database.ref(`/shell/${shellName}`);
+            linesRef = shellRef.child('lines');
+            stdinRef = shellRef.child('stdin');
+            console.log('[CONNECT] Firebase references created');
+
+            titleEl.textContent = `Shell: ${shellName}`;
+
+            // Listen for metadata
+            console.log('[CONNECT] Setting up metadata listener...');
+            shellRef.child('meta').on('value', (snapshot) => {
+                console.log('[META] Metadata received');
+                const meta = snapshot.val();
+                console.log('[META] Meta value:', meta);
+                if (meta) {
+                    updateStatus(meta.status || 'unknown');
+                    commandInfo.textContent = meta.command || '';
+
+                    // Enable input if running
+                    const isRunning = meta.status === 'running';
+                    stdinInput.disabled = !isRunning;
+                    sendBtn.disabled = !isRunning;
+                } else {
+                    updateStatus('not_found');
+                    commandInfo.textContent = '';
+                    stdinInput.disabled = true;
+                    sendBtn.disabled = true;
+                }
+                console.log('[META] Metadata processing complete');
+            });
+            console.log('[CONNECT] Metadata listener set up');
+
+            // Get current stdin index
+            console.log('[CONNECT] Setting up stdin listener...');
+            stdinRef.once('value', (snapshot) => {
+                console.log('[STDIN] Stdin data received');
+                const data = snapshot.val();
+                console.log('[STDIN] Stdin data:', data);
+                if (data && typeof data === 'object') {
+                    const keys = Object.keys(data).map(k => parseInt(k));
+                    stdinIndex = Math.max(...keys, -1) + 1;
+                }
+                console.log('[STDIN] Stdin index set to:', stdinIndex);
+            });
+            console.log('[CONNECT] Stdin listener set up');
+
+            // Listen for output lines
+            console.log('[CONNECT] Setting up child_added listener...');
+            linesRef.on('child_added', (snapshot) => {
+                const lineText = snapshot.val();
+                console.log('[LINES-CHILD] New line added, key:', snapshot.key, 'length:', lineText?.length);
+                appendLine(lineText);
+            });
+            console.log('[CONNECT] child_added listener set up');
+
+            // Also get existing lines on connect
+            console.log('[CONNECT] Fetching existing lines...');
+            linesRef.once('value', (snapshot) => {
+                console.log('[LINES-ONCE] Lines snapshot received');
+                terminal.innerHTML = '';
+                const lines = snapshot.val();
+                if (lines) {
+                    const lineCount = Object.keys(lines).length;
+                    console.log('[LINES-ONCE] Total lines to process:', lineCount);
+                    // Sort by index
+                    const sortedLines = Object.entries(lines)
+                        .sort((a, b) => parseInt(a[0]) - parseInt(b[0]))
+                        .map(entry => entry[1]);
+
+                    console.log('[LINES-ONCE] Starting to append lines...');
+                    let processedCount = 0;
+                    sortedLines.forEach((line, idx) => {
+                        if (idx % 100 === 0) {
+                            console.log('[LINES-ONCE] Processing line', idx, 'of', lineCount);
+                        }
+                        appendLine(line);
+                        processedCount++;
+                    });
+                    console.log('[LINES-ONCE] Finished appending', processedCount, 'lines');
+                } else {
+                    console.log('[LINES-ONCE] No existing lines found');
+                }
+            });
+            console.log('[CONNECT] connect() function complete');
+        }
+
+        function updateStatus(status) {
+            statusDot.className = 'status-dot ' + status;
+            const statusLabels = {
+                'running': 'Running',
+                'completed': 'Completed',
+                'error': 'Error',
+                'interrupted': 'Interrupted',
+                'not_found': 'Not Found',
+                'unknown': 'Unknown'
+            };
+            statusText.textContent = statusLabels[status] || status;
+        }
+
+        function appendLine(text) {
+            console.log('[APPEND] appendLine called, text length:', text?.length);
+            const startTime = performance.now();
+            const lineEl = document.createElement('div');
+            lineEl.className = 'line';
+            // Convert ANSI codes to colored HTML
+            console.log('[APPEND] Calling ansiToHtml...');
+            const htmlContent = ansiToHtml(text);
+            console.log('[APPEND] ansiToHtml returned, result length:', htmlContent?.length);
+            lineEl.innerHTML = htmlContent;
+            terminal.appendChild(lineEl);
+
+            // Auto-scroll if at bottom
+            if (autoScroll) {
+                terminal.scrollTop = terminal.scrollHeight;
+            }
+            const elapsed = performance.now() - startTime;
+            if (elapsed > 10) {
+                console.warn('[APPEND] Slow appendLine:', elapsed.toFixed(2), 'ms for text length:', text?.length);
+            }
+        }
+
+        function ansiToHtml(str) {
+            const ansiStartTime = performance.now();
+            console.log('[ANSI] ansiToHtml called, input length:', str?.length);
+
+            if (!str) {
+                console.log('[ANSI] Empty string, returning nbsp');
+                return '&nbsp;';
+            }
+
+            // Remove OSC sequences (like terminal title changes)
+            str = str.replace(/\x1b\][^\x07]*\x07/g, '');
+            // Remove other control chars except escape
+            str = str.replace(/[\x00-\x09\x0b-\x1a\x1c-\x1f]/g, '');
+            console.log('[ANSI] After cleanup, length:', str.length);
+
+            const fgColors = {
+                30: 'ansi-black', 31: 'ansi-red', 32: 'ansi-green', 33: 'ansi-yellow',
+                34: 'ansi-blue', 35: 'ansi-magenta', 36: 'ansi-cyan', 37: 'ansi-white',
+                90: 'ansi-bright-black', 91: 'ansi-bright-red', 92: 'ansi-bright-green',
+                93: 'ansi-bright-yellow', 94: 'ansi-bright-blue', 95: 'ansi-bright-magenta',
+                96: 'ansi-bright-cyan', 97: 'ansi-bright-white'
+            };
+            const bgColors = {
+                40: 'ansi-bg-black', 41: 'ansi-bg-red', 42: 'ansi-bg-green', 43: 'ansi-bg-yellow',
+                44: 'ansi-bg-blue', 45: 'ansi-bg-magenta', 46: 'ansi-bg-cyan', 47: 'ansi-bg-white'
+            };
+
+            let result = '';
+            let currentClasses = new Set();
+            let i = 0;
+            let iterations = 0;
+            const maxIterations = str.length * 2 + 1000; // Safety limit
+
+            function escapeHtml(text) {
+                return text.replace(/&/g, '&amp;')
+                           .replace(/</g, '&lt;')
+                           .replace(/>/g, '&gt;')
+                           .replace(/"/g, '&quot;');
+            }
+
+            function flushSpan(text) {
+                if (!text) return '';
+                const escaped = escapeHtml(text);
+                if (currentClasses.size === 0) return escaped;
+                return `<span class="${Array.from(currentClasses).join(' ')}">${escaped}</span>`;
+            }
+
+            while (i < str.length) {
+                iterations++;
+                if (iterations > maxIterations) {
+                    console.error('[ANSI] INFINITE LOOP DETECTED! Breaking out. i=', i, 'str.length=', str.length);
+                    console.error('[ANSI] Current char code:', str.charCodeAt(i), 'char:', JSON.stringify(str[i]));
+                    console.error('[ANSI] Context around i:', JSON.stringify(str.slice(Math.max(0, i-10), i+10)));
+                    break;
+                }
+                if (iterations % 10000 === 0) {
+                    console.warn('[ANSI] High iteration count:', iterations, 'at i=', i, 'of', str.length);
+                }
+
+                // Check for ANSI escape sequence
+                if (str[i] === '\x1b' && str[i + 1] === '[') {
+                    // Find the end of the sequence
+                    let j = i + 2;
+                    while (j < str.length && /[0-9;]/.test(str[j])) j++;
+
+                    if (j < str.length && str[j] === 'm') {
+                        // SGR (Select Graphic Rendition) sequence
+                        const codes = str.slice(i + 2, j).split(';').map(c => parseInt(c) || 0);
+
+                        for (const code of codes) {
+                            if (code === 0) {
+                                // Reset
+                                currentClasses.clear();
+                            } else if (code === 1) {
+                                currentClasses.add('ansi-bold');
+                            } else if (code === 2) {
+                                currentClasses.add('ansi-dim');
+                            } else if (code === 3) {
+                                currentClasses.add('ansi-italic');
+                            } else if (code === 4) {
+                                currentClasses.add('ansi-underline');
+                            } else if (code === 9) {
+                                currentClasses.add('ansi-strikethrough');
+                            } else if (code === 22) {
+                                currentClasses.delete('ansi-bold');
+                                currentClasses.delete('ansi-dim');
+                            } else if (code === 23) {
+                                currentClasses.delete('ansi-italic');
+                            } else if (code === 24) {
+                                currentClasses.delete('ansi-underline');
+                            } else if (code === 29) {
+                                currentClasses.delete('ansi-strikethrough');
+                            } else if (fgColors[code]) {
+                                // Remove any existing fg color
+                                for (const c of [...currentClasses]) {
+                                    if (c.startsWith('ansi-') && !c.startsWith('ansi-bg-') &&
+                                        !['ansi-bold','ansi-dim','ansi-italic','ansi-underline','ansi-strikethrough'].includes(c)) {
+                                        currentClasses.delete(c);
+                                    }
+                                }
+                                currentClasses.add(fgColors[code]);
+                            } else if (bgColors[code]) {
+                                // Remove any existing bg color
+                                for (const c of [...currentClasses]) {
+                                    if (c.startsWith('ansi-bg-')) currentClasses.delete(c);
+                                }
+                                currentClasses.add(bgColors[code]);
+                            } else if (code === 39) {
+                                // Default foreground
+                                for (const c of [...currentClasses]) {
+                                    if (c.startsWith('ansi-') && !c.startsWith('ansi-bg-') &&
+                                        !['ansi-bold','ansi-dim','ansi-italic','ansi-underline','ansi-strikethrough'].includes(c)) {
+                                        currentClasses.delete(c);
+                                    }
+                                }
+                            } else if (code === 49) {
+                                // Default background
+                                for (const c of [...currentClasses]) {
+                                    if (c.startsWith('ansi-bg-')) currentClasses.delete(c);
+                                }
+                            }
+                        }
+                        i = j + 1;
+                        continue;
+                    } else if (j < str.length) {
+                        // Non-SGR escape sequence (cursor movement, clear screen, etc.)
+                        // Skip past it to avoid infinite loop
+                        i = j + 1;
+                        continue;
+                    } else {
+                        // Incomplete escape sequence at end of string
+                        i = j;
+                        continue;
+                    }
+                }
+
+                // Regular character - collect until next escape or end
+                let textStart = i;
+                while (i < str.length && str[i] !== '\x1b') i++;
+                result += flushSpan(str.slice(textStart, i));
+            }
+
+            const ansiElapsed = performance.now() - ansiStartTime;
+            if (ansiElapsed > 5 || iterations > 1000) {
+                console.warn('[ANSI] Completed in', ansiElapsed.toFixed(2), 'ms with', iterations, 'iterations for input length', str.length);
+            }
+            return result || '&nbsp;';  // Empty lines get a non-breaking space
+        }
+
+        function sendInput() {
+            const input = stdinInput.value;
+            if (!input || !stdinRef) return;
+
+            // Write to Firebase stdin path
+            stdinRef.child(String(stdinIndex)).set(input)
+                .then(() => {
+                    stdinIndex++;
+                    stdinInput.value = '';
+                })
+                .catch(err => {
+                    console.error('Failed to send input:', err);
+                    alert('Failed to send input: ' + err.message);
+                });
+        }
+
+        // Detect if user scrolls up (disable auto-scroll)
+        terminal.addEventListener('scroll', () => {
+            const isAtBottom = terminal.scrollHeight - terminal.scrollTop <= terminal.clientHeight + 50;
+            autoScroll = isAtBottom;
+        });
+
+        // Handle Enter key - using document level listener for reliability
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                // If focus is on stdin input, send the input
+                if (document.activeElement === stdinInput) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log('Enter pressed on stdin input, sending:', stdinInput.value);
+                    sendInput();
+                    return false;
+                }
+                // If focus is on shell name input, connect
+                if (document.activeElement === document.getElementById('shell-name')) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    connect();
+                    return false;
+                }
+            }
+        });
+    </script>
+</body>
+</html>

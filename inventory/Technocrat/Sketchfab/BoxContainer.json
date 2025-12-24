@@ -1,0 +1,159 @@
+{
+  "author": "Technocrat",
+  "created": 1765874462981,
+  "data": {
+    "Components": {
+      "BoxCollider_28440": {
+        "center": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "isTrigger": true,
+        "size": {
+          "x": 1,
+          "y": 1,
+          "z": 1
+        }
+      },
+      "Box_17872": {
+        "depth": 1,
+        "height": 1,
+        "width": 1
+      },
+      "Material_91894": {
+        "color": {
+          "a": 0.1,
+          "b": 0.803921568627451,
+          "g": 0.1450980392156863,
+          "r": 0.4823529411764706
+        },
+        "generateMipMaps": true,
+        "shaderName": "Unlit/DiffuseTransparent",
+        "side": 0,
+        "texture": ""
+      },
+      "Rigidbody_70756": {
+        "angularDrag": 500,
+        "angularVelocity": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "centerOfMass": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "collisionDetectionMode": 0,
+        "drag": 50,
+        "freezePositionX": false,
+        "freezePositionY": false,
+        "freezePositionZ": false,
+        "freezeRotationX": false,
+        "freezeRotationY": false,
+        "freezeRotationZ": false,
+        "isKinematic": false,
+        "mass": 1,
+        "useGravity": false,
+        "velocity": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        }
+      },
+      "ScriptRunner_6387": {
+        "file": "BoxContainer.js",
+        "hotreload": true,
+        "name": "myScript",
+        "owner": "global"
+      }
+    },
+    "Entity": {
+      "BoxContainer": {
+        "__meta": {
+          "active": true,
+          "components": {
+            "BoxCollider_28440": true,
+            "Rigidbody_70756": true,
+            "ScriptRunner_6387": true
+          },
+          "layer": 5,
+          "localPosition": {
+            "x": 0,
+            "y": 1,
+            "z": 0
+          },
+          "localRotation": {
+            "w": 1,
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "localScale": {
+            "x": 1,
+            "y": 1,
+            "z": 1
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "rotation": {
+            "w": 1,
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "uuid": 5166472267104
+        },
+        "bounds": {
+          "__meta": {
+            "active": true,
+            "components": {
+              "Box_17872": true,
+              "Material_91894": true
+            },
+            "layer": 0,
+            "localPosition": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "localRotation": {
+              "w": 1,
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "localScale": {
+              "x": 1,
+              "y": 1,
+              "z": 1
+            },
+            "position": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "rotation": {
+              "w": 1,
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "uuid": 3277563667120
+          }
+        }
+      }
+    }
+  },
+  "description": "",
+  "folder": "Sketchfab",
+  "icon": "📦",
+  "itemType": "entity",
+  "last_used": 1765874462981,
+  "name": "BoxContainer",
+  "syncedAt": 1765874462085
+}

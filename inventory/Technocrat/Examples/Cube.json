@@ -1,0 +1,85 @@
+{
+  "author": "Technocrat",
+  "created": 1765106668582,
+  "data": {
+    "Components": {
+      "Box_4614": {
+        "depth": 1,
+        "height": 1,
+        "width": 1
+      },
+      "Material_7723": {
+        "color": {
+          "a": 1,
+          "b": 0.3215686274509804,
+          "g": 0.596078431372549,
+          "r": 0.15294117647058825
+        },
+        "generateMipMaps": true,
+        "shaderName": "Standard",
+        "side": 0,
+        "texture": ""
+      },
+      "ScriptRunner_7256": {
+        "file": "RotatingCube.js",
+        "hotreload": true,
+        "name": "myScript",
+        "owner": "global",
+        "vars": {
+          "speed": {
+            "type": "number",
+            "value": 1
+          }
+        }
+      }
+    },
+    "Entity": {
+      "Cube": {
+        "__meta": {
+          "active": true,
+          "components": {
+            "Box_4614": true,
+            "Material_7723": true,
+            "ScriptRunner_7256": true
+          },
+          "layer": 0,
+          "localPosition": {
+            "x": 1,
+            "y": 2,
+            "z": -4
+          },
+          "localRotation": {
+            "w": 1,
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "localScale": {
+            "x": 0.5,
+            "y": 0.5,
+            "z": 0.5
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "rotation": {
+            "w": 1,
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "uuid": 5717924123161
+        }
+      }
+    }
+  },
+  "description": "",
+  "folder": "Examples",
+  "icon": "📦",
+  "itemType": "entity",
+  "last_used": 1765106668582,
+  "name": "Cube",
+  "syncedAt": 1765106669331
+}

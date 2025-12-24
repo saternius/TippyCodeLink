@@ -1,0 +1,149 @@
+{
+  "author": "Technocrat",
+  "created": 1765202706966,
+  "data": {
+    "Components": {
+      "BoxCollider_50846": {
+        "center": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "isTrigger": true,
+        "size": {
+          "x": 1,
+          "y": 1,
+          "z": 0.1
+        }
+      },
+      "Box_55719": {
+        "depth": 0.1,
+        "height": 1,
+        "width": 1
+      },
+      "Rigidbody_44195": {
+        "angularDrag": 5000,
+        "angularVelocity": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "centerOfMass": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "collisionDetectionMode": 0,
+        "drag": 2,
+        "freezePositionX": false,
+        "freezePositionY": false,
+        "freezePositionZ": false,
+        "freezeRotationX": false,
+        "freezeRotationY": false,
+        "freezeRotationZ": false,
+        "isKinematic": false,
+        "mass": 1,
+        "useGravity": false,
+        "velocity": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        }
+      },
+      "ScriptRunner_63944": {
+        "file": "prompt.js",
+        "hotreload": true,
+        "name": "myScript",
+        "owner": "global",
+        "vars": {
+          "name": {
+            "value": "Genesis"
+          }
+        }
+      }
+    },
+    "Entity": {
+      "PromptWindow": {
+        "UI": {
+          "__meta": {
+            "active": true,
+            "layer": 0,
+            "localPosition": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "localRotation": {
+              "w": 1,
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "localScale": {
+              "x": 0.1,
+              "y": 0.1,
+              "z": 0.1
+            },
+            "position": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "rotation": {
+              "w": 1,
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "uuid": 4440199896861
+          }
+        },
+        "__meta": {
+          "active": true,
+          "components": {
+            "BoxCollider_50846": true,
+            "Box_55719": true,
+            "Rigidbody_44195": true,
+            "ScriptRunner_63944": true
+          },
+          "layer": 20,
+          "localPosition": {
+            "x": 0,
+            "y": 2,
+            "z": 0
+          },
+          "localRotation": {
+            "w": 1,
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "localScale": {
+            "x": 1,
+            "y": 1,
+            "z": 1
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "rotation": {
+            "w": 1,
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "uuid": 763981343483
+        }
+      }
+    }
+  },
+  "description": "",
+  "folder": "Muppets",
+  "icon": "📦",
+  "itemType": "entity",
+  "last_used": 1765202706966,
+  "name": "PromptWindow",
+  "syncedAt": 1765202706945
+}

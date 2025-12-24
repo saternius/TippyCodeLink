@@ -1,0 +1,169 @@
+{
+  "author": "Technocrat",
+  "created": 1765953868095,
+  "data": {
+    "Components": {
+      "BoxCollider_88915": {
+        "center": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "isTrigger": true,
+        "size": {
+          "x": 1,
+          "y": 1,
+          "z": 1
+        }
+      },
+      "Cone_39062": {
+        "height": 1,
+        "heightSegments": 1,
+        "openEnded": false,
+        "radialSegments": 32,
+        "radius": 0.5,
+        "thetaLength": 6.283185307179586,
+        "thetaStart": 0
+      },
+      "Material_54632": {
+        "color": {
+          "a": 1,
+          "b": 1,
+          "g": 1,
+          "r": 1
+        },
+        "generateMipMaps": true,
+        "shaderName": "Standard",
+        "side": 0,
+        "texture": ""
+      },
+      "Rigidbody_28463": {
+        "angularDrag": 5000,
+        "angularVelocity": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "centerOfMass": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "collisionDetectionMode": 0,
+        "drag": 40,
+        "freezePositionX": false,
+        "freezePositionY": false,
+        "freezePositionZ": false,
+        "freezeRotationX": false,
+        "freezeRotationY": false,
+        "freezeRotationZ": false,
+        "isKinematic": false,
+        "mass": 1,
+        "useGravity": false,
+        "velocity": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        }
+      },
+      "ScriptRunner_95826": {
+        "file": "HitboxArrow.js",
+        "hotreload": true,
+        "name": "myScript",
+        "owner": "global",
+        "vars": {
+          "side": {
+            "type": "string",
+            "value": "front"
+          }
+        }
+      }
+    },
+    "Entity": {
+      "TipFront": {
+        "Cone": {
+          "__meta": {
+            "active": true,
+            "components": {
+              "Cone_39062": true,
+              "Material_54632": true
+            },
+            "layer": 0,
+            "localPosition": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "localRotation": {
+              "w": 0.7071067811865476,
+              "x": 0.7071067811865475,
+              "y": 0,
+              "z": 0
+            },
+            "localScale": {
+              "x": 1,
+              "y": 1,
+              "z": 1
+            },
+            "position": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "rotation": {
+              "w": 1,
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "uuid": 5234109426138
+          }
+        },
+        "__meta": {
+          "active": true,
+          "components": {
+            "BoxCollider_88915": true,
+            "Rigidbody_28463": true,
+            "ScriptRunner_95826": true
+          },
+          "layer": 5,
+          "localPosition": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "localRotation": {
+            "w": 1,
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "localScale": {
+            "x": 0.125,
+            "y": 0.25,
+            "z": 0.125
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "rotation": {
+            "w": 1,
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "uuid": 7398295745087
+        }
+      }
+    }
+  },
+  "description": "",
+  "folder": "Scripts",
+  "icon": "📦",
+  "itemType": "entity",
+  "last_used": 1765953868095,
+  "name": "TipFront",
+  "syncedAt": 1765953868259
+}

@@ -1,0 +1,65 @@
+{
+  "author": "Technocrat",
+  "created": 1765123064024,
+  "data": {
+    "Components": {
+      "ScriptAsset_69002": {
+        "author": "Technocrat",
+        "data": "this.default = {}\n\nObject.entries(this.default).forEach(([key, val])=>{\n    if(!this.vars[key]) this.vars[key] = val\n})\n\n\nthis.onStart = ()=>{\n    console.log(\"onStart\")\n}\n\nthis.onUpdate = ()=>{\n    console.log(\"onUpdate\")\n}\n\nthis.onDestroy = ()=>{\n    console.log(\"onDestroy\")\n}\n",
+        "name": "TextBuffer.js",
+        "vars": {
+          "buffer": {
+            "type": "string",
+            "value": ""
+          }
+        }
+      }
+    },
+    "Entity": {
+      "TextBuffer_js": {
+        "__meta": {
+          "active": true,
+          "components": {
+            "ScriptAsset_69002": true
+          },
+          "layer": 0,
+          "localPosition": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "localRotation": {
+            "w": 1,
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "localScale": {
+            "x": 1,
+            "y": 1,
+            "z": 1
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "rotation": {
+            "w": 1,
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "uuid": 1163614800446
+        }
+      }
+    }
+  },
+  "description": "",
+  "folder": "Muppets",
+  "icon": "📦",
+  "itemType": "entity",
+  "last_used": 1765123064024,
+  "name": "TextBuffer_js",
+  "syncedAt": 1765123063382
+}

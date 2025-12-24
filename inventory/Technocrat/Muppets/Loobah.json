@@ -1,0 +1,304 @@
+{
+  "author": "Technocrat",
+  "created": 1763242344711,
+  "data": {
+    "Components": {
+      "AudioSource_452": {
+        "bypassEffects": false,
+        "bypassListenerEffects": false,
+        "bypassReverbZones": false,
+        "loop": false,
+        "mute": false,
+        "pitch": 1,
+        "playOnAwake": true,
+        "spatialBlend": 1,
+        "volume": 10
+      },
+      "GLTF_16649": {
+        "addColliders": false,
+        "climbable": false,
+        "generateMipMaps": true,
+        "legacyRotate": false,
+        "nonConvexColliders": false,
+        "slippery": false,
+        "url": "https://firebasestorage.googleapis.com/v0/b/welp-c0e8d.firebasestorage.app/o/glbs%2F4dceeaa3f65b1549a5e459ab26126b3a8a3695abb2553ca27a41fe0fe9c53b26.glb?alt=media"
+      },
+      "GLTF_97673": {
+        "addColliders": false,
+        "climbable": false,
+        "generateMipMaps": true,
+        "legacyRotate": false,
+        "nonConvexColliders": false,
+        "slippery": false,
+        "url": "https://firebasestorage.googleapis.com/v0/b/welp-c0e8d.firebasestorage.app/o/glbs%2F7217e616a50b06916d405e63c2d2511441ec11edeb5ce43fc5baa266c7e34099.glb?alt=media"
+      },
+      "Material_25797": {
+        "color": {
+          "a": 1,
+          "b": 0.533333333333333,
+          "g": 0.3607843137254902,
+          "r": 0.027450980392156862
+        },
+        "generateMipMaps": true,
+        "shaderName": "Standard",
+        "side": 0,
+        "texture": ""
+      },
+      "ScriptRunner_5920": {
+        "file": "muppet.js",
+        "hotreload": true,
+        "name": "myScript",
+        "owner": "global",
+        "vars": {
+          "dialogue": {
+            "value": ""
+          },
+          "muppetName": {
+            "value": "Loobah"
+          },
+          "playAudio": {
+            "value": ""
+          }
+        }
+      },
+      "Sphere_59346": {
+        "heightSegments": 16,
+        "phiLength": 6.283185307179586,
+        "phiStart": 0,
+        "radius": 1,
+        "thetaLength": 3.141592653589793,
+        "thetaStart": 0,
+        "widthSegments": 16
+      }
+    },
+    "Entity": {
+      "Loobah": {
+        "Ball": {
+          "__meta": {
+            "active": true,
+            "components": {
+              "Material_25797": true,
+              "Sphere_59346": true
+            },
+            "layer": 0,
+            "localPosition": {
+              "x": 0,
+              "y": 1.5,
+              "z": 0
+            },
+            "localRotation": {
+              "w": 1,
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "localScale": {
+              "x": 0.2,
+              "y": 0.2,
+              "z": 0.2
+            },
+            "position": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "rotation": {
+              "w": 1,
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "uuid": 6629842811516
+          }
+        },
+        "Dialogue": {
+          "__meta": {
+            "active": true,
+            "components": {
+              "AudioSource_452": true
+            },
+            "layer": 0,
+            "localPosition": {
+              "x": 0,
+              "y": 2.4,
+              "z": 0
+            },
+            "localRotation": {
+              "w": 1,
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "localScale": {
+              "x": 0.25,
+              "y": 0.25,
+              "z": 0.25
+            },
+            "position": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "rotation": {
+              "w": 1,
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "uuid": 8207122124680
+          }
+        },
+        "Eyes": {
+          "Open": {
+            "__meta": {
+              "active": true,
+              "components": {
+                "GLTF_97673": true
+              },
+              "layer": 0,
+              "localPosition": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "localRotation": {
+                "w": 1,
+                "x": -8.527162253696051e-30,
+                "y": 4.000352837160703e-11,
+                "z": 2.131602536277351e-19
+              },
+              "localScale": {
+                "x": 0.125,
+                "y": 0.12499991666666667,
+                "z": 0.125
+              },
+              "position": {
+                "x": -0.15330226719379425,
+                "y": 1.4996649026870728,
+                "z": 0.15023857355117798
+              },
+              "rotation": {
+                "w": 0.9998394846916199,
+                "x": 0.014515937305986881,
+                "y": -0.007017492316663265,
+                "z": -0.007808694615960121
+              },
+              "uuid": 5926055377250
+            }
+          },
+          "Shut": {
+            "__meta": {
+              "active": false,
+              "components": {
+                "GLTF_16649": true
+              },
+              "layer": 0,
+              "localPosition": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "localRotation": {
+                "w": 1,
+                "x": -1.331632972778607e-7,
+                "y": 1.6734715002630907e-10,
+                "z": 3.27418175904981e-10
+              },
+              "localScale": {
+                "x": 0.125,
+                "y": 0.125,
+                "z": 0.125
+              },
+              "position": {
+                "x": -5.820766091346741e-9,
+                "y": 1.980806700885296e-7,
+                "z": 6.169979638315226e-9
+              },
+              "rotation": {
+                "w": 1,
+                "x": -1.331632972778607e-7,
+                "y": 1.6734715002630907e-10,
+                "z": 3.27418175904981e-10
+              },
+              "uuid": 2337906762867
+            }
+          },
+          "__meta": {
+            "active": true,
+            "layer": 0,
+            "localPosition": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "localRotation": {
+              "w": 1,
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "localScale": {
+              "x": 1,
+              "y": 1,
+              "z": 1
+            },
+            "position": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "rotation": {
+              "w": 1,
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "uuid": 7825362149809
+          }
+        },
+        "__meta": {
+          "active": true,
+          "components": {
+            "ScriptRunner_5920": true
+          },
+          "layer": 0,
+          "localPosition": {
+            "x": 0,
+            "y": 0,
+            "z": 2
+          },
+          "localRotation": {
+            "w": 1,
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "localScale": {
+            "x": 1,
+            "y": 1,
+            "z": 1
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "rotation": {
+            "w": 1,
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "uuid": 9503686915177
+        }
+      }
+    }
+  },
+  "description": "",
+  "folder": "Muppets",
+  "icon": "📦",
+  "itemType": "entity",
+  "last_used": 1763242344711,
+  "name": "Loobah",
+  "syncedAt": 1763242346552
+}

@@ -1,0 +1,18 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "Sync Inventory",
+        "type": "shell",
+        "command": "python",
+        "args": [
+          "${workspaceFolder}/update_on_save.py",
+          "${file}"
+        ],
+        "options": {
+          "cwd": "${workspaceFolder}"
+        }
+      }
+    ]
+  }
+  

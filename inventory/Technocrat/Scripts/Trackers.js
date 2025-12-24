@@ -17,6 +17,7 @@ let color = scene.localUser.color;
 let rgba = hexToRgb(color);
 
 window.GetTracker = async (name)=>{
+    let me = SM.myName();
     let tracker = SM.getEntityById(`People/${me}/Trackers/${name}`, false);
     if(!tracker){
         log("Trackers", "Tracker not found: ", name, "waiting..");

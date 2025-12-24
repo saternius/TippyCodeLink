@@ -1,0 +1,198 @@
+{
+  "author": "Technocrat",
+  "created": 1765293883741,
+  "data": {
+    "Components": {
+      "BoxCollider_5831": {
+        "center": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "isTrigger": true,
+        "size": {
+          "x": 1,
+          "y": 1,
+          "z": 0.1
+        }
+      },
+      "Box_94034": {
+        "depth": 0.1,
+        "height": 1,
+        "width": 1
+      },
+      "Rigidbody_55935": {
+        "angularDrag": 5000,
+        "angularVelocity": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "centerOfMass": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "collisionDetectionMode": 0,
+        "drag": 2,
+        "freezePositionX": false,
+        "freezePositionY": false,
+        "freezePositionZ": false,
+        "freezeRotationX": false,
+        "freezeRotationY": false,
+        "freezeRotationZ": false,
+        "isKinematic": false,
+        "mass": 1,
+        "useGravity": false,
+        "velocity": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        }
+      },
+      "ScriptAsset_16995": {
+        "author": "Technocrat",
+        "data": "console.log(\"sketchfab.js\")\n\n// Sketchfab API Configuration\nconst API_TOKEN = \"6948b6e2f3fa4f8e821fdc3250d16029\";\n\nlet V = (attr) => {\n    if(!this.vars[attr]) return null;\n    return this.vars[attr].value;\n}\n\n// State\nlet currentResults = [];\nlet selectedModel = null;\nlet isLoading = false;\n\n// Pagination state\nlet currentQuery = \"\";\nlet nextCursor = null;\nlet currentPage = 1;\nlet cursorHistory = [null]; // Track cursors for each page (page 1 = null cursor)\n\n// Format large numbers (e.g., 1500000 -> \"1.5M\")\nlet formatNumber = (num) => {\n    if (num >= 1000000) {\n        return (num / 1000000).toFixed(1) + \"M\";\n    } else if (num >= 1000) {\n        return (num / 1000).toFixed(1) + \"K\";\n    }\n    return num.toLocaleString();\n}\n\n// Color code face count (green = good, yellow = medium, red = high)\nlet getFaceCountColor = (count) => {\n    if (count < 10000) return \"#4ade80\";      // Green - Low poly\n    if (count < 50000) return \"#a3e635\";      // Light green - Acceptable\n    if (count < 100000) return \"#facc15\";     // Yellow - Medium\n    if (count < 500000) return \"#fb923c\";     // Orange - High\n    return \"#f87171\";                          // Red - Very high\n}\n\n// Color code vertex count\nlet getVertexCountColor = (count) => {\n    if (count < 5000) return \"#4ade80\";       // Green - Low\n    if (count < 25000) return \"#a3e635\";      // Light green - Acceptable\n    if (count < 50000) return \"#facc15\";      // Yellow - Medium\n    if (count < 250000) return \"#fb923c\";     // Orange - High\n    return \"#f87171\";                          // Red - Very high\n}\n\n// UI References\nlet panel = null;\nlet doc = null;\nlet container = null;\nlet headerLabel = null;\nlet resultsGrid = null;\nlet detailPanel = null;\nlet paginationBar = null;\nlet prevBtn = null;\nlet nextBtn = null;\nlet pageLabel = null;\n\n// Search Sketchfab API\nlet searchSketchfab = async (query, cursor = null) => {\n    let url = `https://api.sketchfab.com/v3/search?type=models&q=${encodeURIComponent(query)}&downloadable=true&count=12`;\n    if (cursor) {\n        url += `&cursor=${encodeURIComponent(cursor)}`;\n    }\n    try {\n        const response = await fetch(url, {\n            headers: { 'Authorization': `Token ${API_TOKEN}` }\n        });\n        const data = await response.json();\n        return {\n            results: data.results || [],\n            nextCursor: data.cursors?.next || null,\n            prevCursor: data.cursors?.previous || null\n        };\n    } catch (error) {\n        console.error(\"Sketchfab search error:\", error);\n        return { results: [], nextCursor: null, prevCursor: null };\n    }\n}\n\n// Get download URL and spawn model\nlet downloadModel = async (uid, name) => {\n    if (isLoading) return;\n    isLoading = true;\n    updateDetailButton(\"Downloading...\");\n\n    try {\n        const url = `https://api.sketchfab.com/v3/models/${uid}/download`;\n        const response = await fetch(url, {\n            headers: { 'Authorization': `Token ${API_TOKEN}` }\n        });\n        const data = await response.json();\n\n        if (data.glb && data.glb.url) {\n            await generateModel(name, data.glb.url);\n            updateDetailButton(\"Downloaded!\");\n        } else {\n            console.error(\"No GLB download available for this model\");\n            updateDetailButton(\"No GLB available\");\n        }\n    } catch (error) {\n        console.error(\"Download error:\", error);\n        updateDetailButton(\"Download Failed\");\n    }\n\n    setTimeout(() => {\n        isLoading = false;\n        updateDetailButton(\"Download Model\");\n    }, 2000);\n}\n\nlet generateModel = async (modelName, glbUrl) => {\n    modelName = modelName.replace(\" \", \"_\");\n    let entity = await LoadItem(\"BoxContainer\", \"Scene\", {\n        name: modelName,\n    })\n    //let entity = await AddEntity(boxContainer.id, modelName+\"_model\")\n    let gltf = await AddComponent(entity.id, \"GLTF\", {\n        componentProperties: {\n            url: glbUrl,\n            addColliders: true,\n            nonConvexColliders: false,\n            childrenLayer: 20,\n        }\n    })\n    entity.Set(\"localPosition\", {x: 0, y: 0, z: 0})\n    entity.Set(\"localScale\", {x: 1, y: 1, z: 1})\n}\n\n// Handle var changes (query submission)\nthis.onVarChange = async (varName, snap) => {\n    let value = snap.value;\n    console.log(\"Sketchfab\", \"onVarChange\", varName, value);\n\n    if (varName === \"query\" && value) {\n        await performSearch(value);\n    }\n}\n\n// Perform search and update UI\nlet performSearch = async (query, cursor = null, isNewSearch = true) => {\n    if (isLoading) return;\n    isLoading = true;\n\n    // Update header\n    if (headerLabel) {\n        headerLabel.text = `Searching: \"${query}\"...`;\n    }\n\n    // Clear previous results\n    selectedModel = null;\n    hideDetailPanel();\n\n    // Reset pagination for new searches\n    if (isNewSearch) {\n        currentQuery = query;\n        currentPage = 1;\n        cursorHistory = [null]; // Reset history, page 1 has no cursor\n    }\n\n    // Fetch results\n    const searchResult = await searchSketchfab(query, cursor);\n    currentResults = searchResult.results;\n    nextCursor = searchResult.nextCursor;\n\n    // Update header with result count\n    if (headerLabel) {\n        headerLabel.text = `Sketchfab: \"${query}\" (Page ${currentPage})`;\n    }\n\n    // Render results\n    renderResults();\n    updatePaginationControls();\n    isLoading = false;\n}\n\n// Navigate to next page\nlet goToNextPage = async () => {\n    if (!nextCursor || isLoading) return;\n    currentPage++;\n    // Store the cursor for this new page so we can return to it\n    if (cursorHistory.length < currentPage) {\n        cursorHistory.push(nextCursor);\n    }\n    await performSearch(currentQuery, nextCursor, false);\n}\n\n// Navigate to previous page\nlet goToPrevPage = async () => {\n    if (currentPage <= 1 || isLoading) return;\n    currentPage--;\n    // Use our stored cursor history to go back (page 1 = index 0 = null)\n    const prevPageCursor = cursorHistory[currentPage - 1];\n    await performSearch(currentQuery, prevPageCursor, false);\n}\n\n// Update pagination button states\nlet updatePaginationControls = () => {\n    const canGoPrev = currentPage > 1;\n    if (prevBtn) {\n        prevBtn.style.opacity = canGoPrev ? \"1\" : \"0.4\";\n        prevBtn.style.cursor = canGoPrev ? \"pointer\" : \"default\";\n    }\n    if (nextBtn) {\n        nextBtn.style.opacity = nextCursor ? \"1\" : \"0.4\";\n        nextBtn.style.cursor = nextCursor ? \"pointer\" : \"default\";\n    }\n    if (pageLabel) {\n        pageLabel.text = `Page ${currentPage}`;\n    }\n}\n\n// Render thumbnail grid\nlet renderResults = () => {\n    if (!resultsGrid) return;\n\n    // Clear existing children\n    // Note: We rebuild the grid content each time\n    if (resultsGrid._gridContent) {\n        resultsGrid._gridContent.Destroy();\n    }\n\n    const gridContent = doc.CreateVisualElement();\n    gridContent.style.display = \"flex\";\n    gridContent.style.flexDirection = \"row\";\n    gridContent.style.flexWrap = \"wrap\";\n    gridContent.style.padding = \"4px\";\n    gridContent.style.alignContent = \"flex-start\";\n    resultsGrid._gridContent = gridContent;\n    resultsGrid.AppendChild(gridContent);\n\n    currentResults.forEach((model) => {\n        const thumb = createThumbnail(model);\n        gridContent.AppendChild(thumb);\n    });\n}\n\n// Create a thumbnail element\nlet createThumbnail = (model) => {\n    const thumbContainer = doc.CreateVisualElement();\n    thumbContainer.style.width = \"80px\";\n    thumbContainer.style.height = \"80px\";\n    thumbContainer.style.margin = \"4px\";\n    thumbContainer.style.borderRadius = \"4px\";\n    thumbContainer.style.backgroundColor = \"#2a2a2a\";\n    thumbContainer.style.cursor = \"pointer\";\n\n    // Get thumbnail URL (prefer smaller size for grid)\n    const thumbnailUrl = getThumbnailUrl(model, 100);\n    if (thumbnailUrl) {\n        thumbContainer.style.backgroundImage = `url(${thumbnailUrl})`;\n        thumbContainer.style.backgroundSize = \"cover\";\n        thumbContainer.style.backgroundPosition = \"center\";\n    }\n\n    // Hover effect\n    thumbContainer.OnMouseEnter(() => {\n        thumbContainer.style.borderWidth = \"2px\";\n        thumbContainer.style.borderColor = \"#0051e5\";\n    });\n\n    thumbContainer.OnMouseLeave(() => {\n        thumbContainer.style.borderWidth = \"0px\";\n    });\n\n    // Click to show detail\n    thumbContainer.OnClick(() => {\n        selectedModel = model;\n        showDetailPanel(model);\n    });\n\n    return thumbContainer;\n}\n\n// Get thumbnail URL from model data\nlet getThumbnailUrl = (model, preferredSize) => {\n    if (!model.thumbnails || !model.thumbnails.images) return null;\n\n    const images = model.thumbnails.images;\n    // Sort by size and find closest to preferred\n    const sorted = images.sort((a, b) => a.width - b.width);\n\n    // Find image closest to preferred size\n    for (const img of sorted) {\n        if (img.width >= preferredSize) {\n            return img.url;\n        }\n    }\n\n    // Return largest available if none match\n    return sorted[sorted.length - 1]?.url || null;\n}\n\n// Show detail panel for selected model\nlet showDetailPanel = (model) => {\n    if (!detailPanel) return;\n\n    // Clear existing content\n    if (detailPanel._content) {\n        detailPanel._content.Destroy();\n    }\n\n    detailPanel.style.display = \"flex\";\n\n    const content = doc.CreateVisualElement();\n    content.style.display = \"flex\";\n    content.style.flexDirection = \"column\";\n    content.style.padding = \"8px\";\n    content.style.height = \"100%\";\n    detailPanel._content = content;\n    detailPanel.AppendChild(content);\n\n    // Large thumbnail\n    const thumbLarge = doc.CreateVisualElement();\n    thumbLarge.style.width = \"100%\";\n    thumbLarge.style.height = \"100px\";\n    thumbLarge.style.borderRadius = \"4px\";\n    thumbLarge.style.marginBottom = \"8px\";\n    thumbLarge.style.backgroundColor = \"#2a2a2a\";\n\n    const largeThumbnailUrl = getThumbnailUrl(model, 256);\n    if (largeThumbnailUrl) {\n        thumbLarge.style.backgroundImage = `url(${largeThumbnailUrl})`;\n        thumbLarge.style.backgroundSize = \"cover\";\n        thumbLarge.style.backgroundPosition = \"center\";\n    }\n    content.AppendChild(thumbLarge);\n\n    // Model name\n    const nameLabel = doc.CreateLabel();\n    nameLabel.text = model.name || \"Untitled\";\n    nameLabel.style.color = \"white\";\n    nameLabel.style.fontSize = \"14px\";\n    nameLabel.style.fontWeight = \"bold\";\n    nameLabel.style.marginBottom = \"4px\";\n    nameLabel.style.whiteSpace = \"normal\";\n    content.AppendChild(nameLabel);\n\n    // Author\n    const authorLabel = doc.CreateLabel();\n    authorLabel.text = `By: ${model.user?.displayName || model.user?.username || \"Unknown\"}`;\n    authorLabel.style.color = \"#aaa\";\n    authorLabel.style.fontSize = \"11px\";\n    authorLabel.style.marginBottom = \"4px\";\n    content.AppendChild(authorLabel);\n\n    // Social stats\n    const statsLabel = doc.CreateLabel();\n    const views = model.viewCount || 0;\n    const likes = model.likeCount || 0;\n    statsLabel.text = `Views: ${formatNumber(views)} | Likes: ${formatNumber(likes)}`;\n    statsLabel.style.color = \"#888\";\n    statsLabel.style.fontSize = \"10px\";\n    statsLabel.style.marginBottom = \"6px\";\n    content.AppendChild(statsLabel);\n\n    // Performance section header\n    const perfHeader = doc.CreateLabel();\n    perfHeader.text = \"Performance\";\n    perfHeader.style.color = \"#0051e5\";\n    perfHeader.style.fontSize = \"10px\";\n    perfHeader.style.fontWeight = \"bold\";\n    perfHeader.style.marginTop = \"4px\";\n    perfHeader.style.marginBottom = \"2px\";\n    content.AppendChild(perfHeader);\n\n    // Face count\n    const faceCount = model.faceCount || 0;\n    const faceLabel = doc.CreateLabel();\n    faceLabel.text = `Faces: ${formatNumber(faceCount)}`;\n    faceLabel.style.color = getFaceCountColor(faceCount);\n    faceLabel.style.fontSize = \"10px\";\n    content.AppendChild(faceLabel);\n\n    // Vertex count\n    const vertexCount = model.vertexCount || 0;\n    const vertexLabel = doc.CreateLabel();\n    vertexLabel.text = `Vertices: ${formatNumber(vertexCount)}`;\n    vertexLabel.style.color = getVertexCountColor(vertexCount);\n    vertexLabel.style.fontSize = \"10px\";\n    content.AppendChild(vertexLabel);\n\n    // Texture count\n    if (model.textureCount !== undefined) {\n        const textureLabel = doc.CreateLabel();\n        textureLabel.text = `Textures: ${model.textureCount}`;\n        textureLabel.style.color = \"#888\";\n        textureLabel.style.fontSize = \"10px\";\n        content.AppendChild(textureLabel);\n    }\n\n    // Animation info\n    if (model.isAnimated || model.animationCount > 0) {\n        const animLabel = doc.CreateLabel();\n        const animCount = model.animationCount || 1;\n        animLabel.text = `Animations: ${animCount}`;\n        animLabel.style.color = \"#f0a030\";\n        animLabel.style.fontSize = \"10px\";\n        content.AppendChild(animLabel);\n    }\n\n    // Spacer\n    const spacer = doc.CreateVisualElement();\n    spacer.style.flexGrow = \"1\";\n    spacer.style.minHeight = \"8px\";\n    content.AppendChild(spacer);\n\n    // Download button\n    const downloadBtn = doc.CreateButton();\n    downloadBtn.text = \"Download Model\";\n    downloadBtn.style.backgroundColor = \"#0051e5\";\n    downloadBtn.style.color = \"white\";\n    downloadBtn.style.padding = \"8px\";\n    downloadBtn.style.borderRadius = \"4px\";\n    downloadBtn.style.fontSize = \"12px\";\n    downloadBtn.style.cursor = \"pointer\";\n    detailPanel._downloadBtn = downloadBtn;\n\n    downloadBtn.OnClick(() => {\n        if (selectedModel && !isLoading) {\n            downloadModel(selectedModel.uid, selectedModel.name);\n        }\n    });\n\n    content.AppendChild(downloadBtn);\n}\n\n// Hide detail panel\nlet hideDetailPanel = () => {\n    if (detailPanel) {\n        detailPanel.style.display = \"none\";\n        if (detailPanel._content) {\n            detailPanel._content.Destroy();\n            detailPanel._content = null;\n        }\n    }\n}\n\n// Update download button text\nlet updateDetailButton = (text) => {\n    if (detailPanel && detailPanel._downloadBtn) {\n        detailPanel._downloadBtn.text = text;\n    }\n}\n\n// Initialize UI\nthis.onStart = async () => {\n    panel = this._entity.GetChild(\"UI\");\n    if(panel){\n        Object.values(panel._bs.components).forEach(c => c.Destroy());\n    }else{\n        log(\"Sketchfab\", \"panel UI not founds\", this._entity)\n    }\n\n    // Increase resolution for better grid display\n    doc = new BS.BanterUI(new BS.Vector2(700, 350), false);\n    await panel._bs.AddComponent(doc);\n    doc.SetBackgroundColor(new BS.Vector4(0.12, 0.12, 0.12, 1));\n\n    renderWindow();\n}\n\n// Render main window layout\nlet renderWindow = () => {\n    if (container) {\n        container.Destroy();\n    }\n\n    // Main container\n    container = doc.CreateVisualElement();\n    container.style.display = \"flex\";\n    container.style.flexDirection = \"column\";\n    container.style.height = \"100%\";\n    container.style.width = \"100%\";\n\n    // Header\n    const header = doc.CreateVisualElement();\n    header.style.display = \"flex\";\n    header.style.flexDirection = \"row\";\n    header.style.alignItems = \"center\";\n    header.style.backgroundColor = \"#0051e5\";\n    header.style.padding = \"8px\";\n    header.style.minHeight = \"30px\";\n\n    headerLabel = doc.CreateLabel();\n    headerLabel.text = \"Sketchfab Browser - Set 'query' var to search\";\n    headerLabel.style.color = \"white\";\n    headerLabel.style.fontSize = \"12px\";\n    headerLabel.style.fontWeight = \"bold\";\n    header.AppendChild(headerLabel);\n\n    container.AppendChild(header);\n\n    // Main content area (grid + detail panel)\n    const mainContent = doc.CreateVisualElement();\n    mainContent.style.display = \"flex\";\n    mainContent.style.flexDirection = \"row\";\n    mainContent.style.flexGrow = \"1\";\n    mainContent.style.overflow = \"hidden\";\n\n    // Results grid (scrollable)\n    resultsGrid = doc.CreateScrollView();\n    resultsGrid.style.flexGrow = \"1\";\n    resultsGrid.style.backgroundColor = \"#1a1a1a\";\n    resultsGrid.verticalScrolling = true;\n    resultsGrid.horizontalScrolling = false;\n    mainContent.AppendChild(resultsGrid);\n\n    // Detail panel (right side)\n    detailPanel = doc.CreateVisualElement();\n    detailPanel.style.width = \"160px\";\n    detailPanel.style.backgroundColor = \"#252525\";\n    detailPanel.style.borderLeft = \"1px solid #333\";\n    detailPanel.style.display = \"none\"; // Hidden until model selected\n    mainContent.AppendChild(detailPanel);\n\n    container.AppendChild(mainContent);\n\n    // Pagination bar\n    paginationBar = doc.CreateVisualElement();\n    paginationBar.style.display = \"flex\";\n    paginationBar.style.flexDirection = \"row\";\n    paginationBar.style.alignItems = \"center\";\n    paginationBar.style.justifyContent = \"center\";\n    paginationBar.style.backgroundColor = \"#1a1a1a\";\n    paginationBar.style.padding = \"8px\";\n    paginationBar.style.borderTop = \"1px solid #333\";\n    paginationBar.style.minHeight = \"36px\";\n\n    // Previous button\n    prevBtn = doc.CreateButton();\n    prevBtn.text = \"← Prev\";\n    prevBtn.style.backgroundColor = \"#0051e5\";\n    prevBtn.style.color = \"white\";\n    prevBtn.style.padding = \"6px 12px\";\n    prevBtn.style.borderRadius = \"4px\";\n    prevBtn.style.fontSize = \"11px\";\n    prevBtn.style.marginRight = \"12px\";\n    prevBtn.style.opacity = \"0.4\";\n    prevBtn.OnClick(() => goToPrevPage());\n    paginationBar.AppendChild(prevBtn);\n\n    // Page label\n    pageLabel = doc.CreateLabel();\n    pageLabel.text = \"Page 1\";\n    pageLabel.style.color = \"white\";\n    pageLabel.style.fontSize = \"12px\";\n    pageLabel.style.minWidth = \"60px\";\n    pageLabel.style.textAlign = \"center\";\n    paginationBar.AppendChild(pageLabel);\n\n    // Next button\n    nextBtn = doc.CreateButton();\n    nextBtn.text = \"Next →\";\n    nextBtn.style.backgroundColor = \"#0051e5\";\n    nextBtn.style.color = \"white\";\n    nextBtn.style.padding = \"6px 12px\";\n    nextBtn.style.borderRadius = \"4px\";\n    nextBtn.style.fontSize = \"11px\";\n    nextBtn.style.marginLeft = \"12px\";\n    nextBtn.style.opacity = \"0.4\";\n    nextBtn.OnClick(() => goToNextPage());\n    paginationBar.AppendChild(nextBtn);\n\n    container.AppendChild(paginationBar);\n}\n\n// Cleanup\nthis.onDestroy = async () => {\n    if (doc) {\n        await doc.Destroy();\n    }\n}\n",
+        "name": "Sketchfab.js",
+        "vars": {
+          "query": {
+            "type": "string",
+            "value": ""
+          }
+        }
+      },
+      "ScriptRunner_79041": {
+        "file": "Sketchfab.js",
+        "hotreload": true,
+        "name": "myScript",
+        "owner": "global",
+        "vars": {
+          "query": {
+            "type": "string",
+            "value": "cat"
+          }
+        }
+      }
+    },
+    "Entity": {
+      "Sketchfab": {
+        "Sketchfab_js": {
+          "__meta": {
+            "active": true,
+            "components": {
+              "ScriptAsset_16995": true
+            },
+            "layer": 0,
+            "localPosition": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "localRotation": {
+              "w": 1,
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "localScale": {
+              "x": 1,
+              "y": 1,
+              "z": 1
+            },
+            "position": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "rotation": {
+              "w": 1,
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "uuid": 777318880660
+          }
+        },
+        "UI": {
+          "__meta": {
+            "active": true,
+            "layer": 0,
+            "localPosition": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "localRotation": {
+              "w": 1,
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "localScale": {
+              "x": 0.1,
+              "y": 0.1,
+              "z": 0.1
+            },
+            "position": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "rotation": {
+              "w": 1,
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "uuid": 6179741203456
+          }
+        },
+        "__meta": {
+          "active": true,
+          "components": {
+            "BoxCollider_5831": true,
+            "Box_94034": true,
+            "Rigidbody_55935": true,
+            "ScriptRunner_79041": true
+          },
+          "layer": 20,
+          "localPosition": {
+            "x": 0,
+            "y": 2,
+            "z": 0
+          },
+          "localRotation": {
+            "w": 1,
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "localScale": {
+            "x": 1,
+            "y": 1,
+            "z": 1
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "rotation": {
+            "w": 1,
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "uuid": 576278785409
+        }
+      }
+    }
+  },
+  "description": "",
+  "folder": "Sketchfab",
+  "icon": "📦",
+  "itemType": "entity",
+  "last_used": 1765293883741,
+  "name": "Sketchfab",
+  "syncedAt": 1765293883708
+}

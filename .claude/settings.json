@@ -1,0 +1,8 @@
+{
+  "alwaysThinkingEnabled": true,
+  "statusLine": {
+    "type": "command",
+    "command": "/home/jason/TippyCodeLink/.claude/statusline.sh",
+    "padding": 0
+  }
+}

@@ -1,0 +1,200 @@
+{
+  "author": "Technocrat",
+  "created": 1762965364542,
+  "data": {
+    "Components": {
+      "GLTF_170520571": {
+        "generateMipMaps": true,
+        "url": "https://firebasestorage.googleapis.com/v0/b/welp-c0e8d.firebasestorage.app/o/glbs%2F7217e616a50b06916d405e63c2d2511441ec11edeb5ce43fc5baa266c7e34099.glb?alt=media"
+      },
+      "Material_6921": {
+        "color": {
+          "a": 1,
+          "b": 0.533333333333333,
+          "g": 0.3607843137254902,
+          "r": 0.027450980392156862
+        },
+        "generateMipMaps": true,
+        "shaderName": "Standard"
+      },
+      "ScriptRunner_2542": {
+        "file": "muppet.js",
+        "hotreload": true,
+        "name": "myScript",
+        "owner": "global",
+        "vars": {
+          "StareAt": {
+            "type": "string",
+            "value": "nothing"
+          },
+          "dialogue": {
+            "type": "string",
+            "value": ""
+          }
+        }
+      },
+      "Sphere_5052": {
+        "heightSegments": 16,
+        "phiLength": 6.283185307179586,
+        "radius": 1,
+        "thetaLength": 3.141592653589793,
+        "widthSegments": 16
+      }
+    },
+    "Entity": {
+      "Muppet": {
+        "Ball": {
+          "__meta": {
+            "active": true,
+            "components": {
+              "Material_6921": true,
+              "Sphere_5052": true
+            },
+            "layer": 0,
+            "localPosition": {
+              "x": 0,
+              "y": 1.5,
+              "z": 0
+            },
+            "localRotation": {
+              "w": 1,
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "localScale": {
+              "x": 0.2,
+              "y": 0.2,
+              "z": 0.2
+            },
+            "position": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "rotation": {
+              "w": 1,
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "uuid": 3112482599725
+          }
+        },
+        "Dialogue": {
+          "__meta": {
+            "active": true,
+            "layer": 0,
+            "localPosition": {
+              "x": 0,
+              "y": 2,
+              "z": 0
+            },
+            "localRotation": {
+              "w": 1,
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "localScale": {
+              "x": 0.1,
+              "y": 0.1,
+              "z": 0.1
+            },
+            "position": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "rotation": {
+              "w": 1,
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "uuid": 2028473751204
+          }
+        },
+        "Eyes": {
+          "__meta": {
+            "active": true,
+            "components": {
+              "GLTF_170520571": true
+            },
+            "layer": 0,
+            "localPosition": {
+              "x": 0,
+              "y": 1.499665,
+              "z": 0
+            },
+            "localRotation": {
+              "w": 1,
+              "x": -2.784370268025711e-12,
+              "y": -5.377303829000288e-33,
+              "z": 1.9312459591852795e-21
+            },
+            "localScale": {
+              "x": 0.125,
+              "y": 0.12499991666666667,
+              "z": 0.125
+            },
+            "position": {
+              "x": -0.15330226719379425,
+              "y": 1.4996649026870728,
+              "z": 0.15023857355117798
+            },
+            "rotation": {
+              "w": 0.9998394846916199,
+              "x": 0.014515937305986881,
+              "y": -0.007017492316663265,
+              "z": -0.007808694615960121
+            },
+            "uuid": 4226097004
+          }
+        },
+        "__meta": {
+          "active": true,
+          "components": {
+            "ScriptRunner_2542": true
+          },
+          "layer": 0,
+          "localPosition": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "localRotation": {
+            "w": 1,
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "localScale": {
+            "x": 1,
+            "y": 1,
+            "z": 1
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "rotation": {
+            "w": 1,
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "uuid": 6934729943266
+        }
+      }
+    }
+  },
+  "description": "",
+  "folder": "Muppets",
+  "icon": "📦",
+  "itemType": "entity",
+  "last_used": 1762965364542,
+  "name": "Muppet",
+  "syncedAt": 1762965367102
+}

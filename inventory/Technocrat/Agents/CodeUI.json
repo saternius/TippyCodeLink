@@ -1,0 +1,144 @@
+{
+  "author": "Technocrat",
+  "created": 1766131572522,
+  "data": {
+    "Components": {
+      "BoxCollider_8578": {
+        "center": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "isTrigger": true,
+        "size": {
+          "x": 1,
+          "y": 1,
+          "z": 0.1
+        }
+      },
+      "Box_61925": {
+        "depth": 0.1,
+        "height": 1,
+        "width": 1
+      },
+      "Rigidbody_76961": {
+        "angularDrag": 5000,
+        "angularVelocity": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "centerOfMass": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "collisionDetectionMode": 0,
+        "drag": 2,
+        "freezePositionX": false,
+        "freezePositionY": false,
+        "freezePositionZ": false,
+        "freezeRotationX": false,
+        "freezeRotationY": false,
+        "freezeRotationZ": false,
+        "isKinematic": false,
+        "mass": 1,
+        "useGravity": false,
+        "velocity": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        }
+      },
+      "ScriptRunner_45094": {
+        "file": "CodeUI.js",
+        "hotreload": true,
+        "name": "myScript",
+        "owner": "global"
+      }
+    },
+    "Entity": {
+      "CodeUI": {
+        "UI": {
+          "__meta": {
+            "active": true,
+            "layer": 0,
+            "localPosition": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "localRotation": {
+              "w": 1,
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "localScale": {
+              "x": 0.1,
+              "y": 0.1,
+              "z": 0.1
+            },
+            "position": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "rotation": {
+              "w": 1,
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "uuid": 8161207915298
+          }
+        },
+        "__meta": {
+          "active": true,
+          "components": {
+            "BoxCollider_8578": true,
+            "Box_61925": true,
+            "Rigidbody_76961": true,
+            "ScriptRunner_45094": true
+          },
+          "layer": 20,
+          "localPosition": {
+            "x": 0,
+            "y": 2,
+            "z": 0
+          },
+          "localRotation": {
+            "w": 1,
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "localScale": {
+            "x": 1,
+            "y": 1,
+            "z": 1
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "rotation": {
+            "w": 1,
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "uuid": 5069871796985
+        }
+      }
+    }
+  },
+  "description": "",
+  "folder": "Agents",
+  "icon": "📦",
+  "itemType": "entity",
+  "last_used": 1766131572522,
+  "name": "CodeUI",
+  "syncedAt": 1766131573754
+}

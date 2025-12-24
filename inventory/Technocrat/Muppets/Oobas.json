@@ -1,0 +1,1486 @@
+{
+  "author": "Technocrat",
+  "created": 1763259573499,
+  "data": {
+    "Components": {
+      "AudioSource_29199": {
+        "bypassEffects": false,
+        "bypassListenerEffects": false,
+        "bypassReverbZones": false,
+        "loop": false,
+        "mute": false,
+        "pitch": 1,
+        "playOnAwake": true,
+        "spatialBlend": 1,
+        "volume": 10
+      },
+      "AudioSource_36482": {
+        "bypassEffects": false,
+        "bypassListenerEffects": false,
+        "bypassReverbZones": false,
+        "loop": false,
+        "mute": false,
+        "pitch": 1,
+        "playOnAwake": true,
+        "spatialBlend": 1,
+        "volume": 10
+      },
+      "AudioSource_452": {
+        "bypassEffects": false,
+        "bypassListenerEffects": false,
+        "bypassReverbZones": false,
+        "loop": false,
+        "mute": false,
+        "pitch": 1,
+        "playOnAwake": true,
+        "spatialBlend": 1,
+        "volume": 10
+      },
+      "AudioSource_5612": {
+        "bypassEffects": false,
+        "bypassListenerEffects": false,
+        "bypassReverbZones": false,
+        "loop": false,
+        "mute": false,
+        "pitch": 1,
+        "playOnAwake": true,
+        "spatialBlend": 1,
+        "volume": 10
+      },
+      "AudioSource_91760": {
+        "bypassEffects": false,
+        "bypassListenerEffects": false,
+        "bypassReverbZones": false,
+        "loop": false,
+        "mute": false,
+        "pitch": 1,
+        "playOnAwake": true,
+        "spatialBlend": 1,
+        "volume": 10
+      },
+      "GLTF_10358": {
+        "addColliders": false,
+        "climbable": false,
+        "generateMipMaps": true,
+        "legacyRotate": false,
+        "nonConvexColliders": false,
+        "slippery": false,
+        "url": "https://firebasestorage.googleapis.com/v0/b/welp-c0e8d.firebasestorage.app/o/glbs%2F4dceeaa3f65b1549a5e459ab26126b3a8a3695abb2553ca27a41fe0fe9c53b26.glb?alt=media"
+      },
+      "GLTF_16649": {
+        "addColliders": false,
+        "climbable": false,
+        "generateMipMaps": true,
+        "legacyRotate": false,
+        "nonConvexColliders": false,
+        "slippery": false,
+        "url": "https://firebasestorage.googleapis.com/v0/b/welp-c0e8d.firebasestorage.app/o/glbs%2F4dceeaa3f65b1549a5e459ab26126b3a8a3695abb2553ca27a41fe0fe9c53b26.glb?alt=media"
+      },
+      "GLTF_21932": {
+        "addColliders": false,
+        "climbable": false,
+        "generateMipMaps": true,
+        "legacyRotate": false,
+        "nonConvexColliders": false,
+        "slippery": false,
+        "url": "https://firebasestorage.googleapis.com/v0/b/welp-c0e8d.firebasestorage.app/o/glbs%2F4dceeaa3f65b1549a5e459ab26126b3a8a3695abb2553ca27a41fe0fe9c53b26.glb?alt=media"
+      },
+      "GLTF_23393": {
+        "addColliders": false,
+        "climbable": false,
+        "generateMipMaps": true,
+        "legacyRotate": false,
+        "nonConvexColliders": false,
+        "slippery": false,
+        "url": "https://firebasestorage.googleapis.com/v0/b/welp-c0e8d.firebasestorage.app/o/glbs%2F7217e616a50b06916d405e63c2d2511441ec11edeb5ce43fc5baa266c7e34099.glb?alt=media"
+      },
+      "GLTF_41290": {
+        "addColliders": false,
+        "climbable": false,
+        "generateMipMaps": true,
+        "legacyRotate": false,
+        "nonConvexColliders": false,
+        "slippery": false,
+        "url": "https://firebasestorage.googleapis.com/v0/b/welp-c0e8d.firebasestorage.app/o/glbs%2F7217e616a50b06916d405e63c2d2511441ec11edeb5ce43fc5baa266c7e34099.glb?alt=media"
+      },
+      "GLTF_48121": {
+        "addColliders": false,
+        "climbable": false,
+        "generateMipMaps": true,
+        "legacyRotate": false,
+        "nonConvexColliders": false,
+        "slippery": false,
+        "url": "https://firebasestorage.googleapis.com/v0/b/welp-c0e8d.firebasestorage.app/o/glbs%2F4dceeaa3f65b1549a5e459ab26126b3a8a3695abb2553ca27a41fe0fe9c53b26.glb?alt=media"
+      },
+      "GLTF_6104": {
+        "addColliders": false,
+        "climbable": false,
+        "generateMipMaps": true,
+        "legacyRotate": false,
+        "nonConvexColliders": false,
+        "slippery": false,
+        "url": "https://firebasestorage.googleapis.com/v0/b/welp-c0e8d.firebasestorage.app/o/glbs%2F7217e616a50b06916d405e63c2d2511441ec11edeb5ce43fc5baa266c7e34099.glb?alt=media"
+      },
+      "GLTF_64130": {
+        "addColliders": false,
+        "climbable": false,
+        "generateMipMaps": true,
+        "legacyRotate": false,
+        "nonConvexColliders": false,
+        "slippery": false,
+        "url": "https://firebasestorage.googleapis.com/v0/b/welp-c0e8d.firebasestorage.app/o/glbs%2F4dceeaa3f65b1549a5e459ab26126b3a8a3695abb2553ca27a41fe0fe9c53b26.glb?alt=media"
+      },
+      "GLTF_86652": {
+        "addColliders": false,
+        "climbable": false,
+        "generateMipMaps": true,
+        "legacyRotate": false,
+        "nonConvexColliders": false,
+        "slippery": false,
+        "url": "https://firebasestorage.googleapis.com/v0/b/welp-c0e8d.firebasestorage.app/o/glbs%2F7217e616a50b06916d405e63c2d2511441ec11edeb5ce43fc5baa266c7e34099.glb?alt=media"
+      },
+      "GLTF_97673": {
+        "addColliders": false,
+        "climbable": false,
+        "generateMipMaps": true,
+        "legacyRotate": false,
+        "nonConvexColliders": false,
+        "slippery": false,
+        "url": "https://firebasestorage.googleapis.com/v0/b/welp-c0e8d.firebasestorage.app/o/glbs%2F7217e616a50b06916d405e63c2d2511441ec11edeb5ce43fc5baa266c7e34099.glb?alt=media"
+      },
+      "Material_20360": {
+        "color": {
+          "a": 1,
+          "b": 0.06274509803921569,
+          "g": 0.6862745098039216,
+          "r": 0.23529411764705882
+        },
+        "generateMipMaps": true,
+        "shaderName": "Standard",
+        "side": 0,
+        "texture": ""
+      },
+      "Material_23984": {
+        "color": {
+          "a": 1,
+          "b": 0.13725490196078433,
+          "g": 0.7137254901960784,
+          "r": 0.7098039215686275
+        },
+        "generateMipMaps": true,
+        "shaderName": "Standard",
+        "side": 0,
+        "texture": ""
+      },
+      "Material_25797": {
+        "color": {
+          "a": 1,
+          "b": 0.533333333333333,
+          "g": 0.3607843137254902,
+          "r": 0.027450980392156862
+        },
+        "generateMipMaps": true,
+        "shaderName": "Standard",
+        "side": 0,
+        "texture": ""
+      },
+      "Material_52738": {
+        "color": {
+          "a": 1,
+          "b": 0.792156862745098,
+          "g": 0.2627450980392157,
+          "r": 0.8235294117647058
+        },
+        "generateMipMaps": true,
+        "shaderName": "Standard",
+        "side": 0,
+        "texture": ""
+      },
+      "Material_77248": {
+        "color": {
+          "a": 1,
+          "b": 0.027450980392156862,
+          "g": 0.08235294117647059,
+          "r": 0.5333333333333333
+        },
+        "generateMipMaps": true,
+        "shaderName": "Standard",
+        "side": 0,
+        "texture": ""
+      },
+      "ScriptRunner_12915": {
+        "file": "muppet.js",
+        "hotreload": true,
+        "name": "myScript",
+        "owner": "global",
+        "vars": {
+          "dialogue": {
+            "value": ""
+          },
+          "muppetName": {
+            "value": "Scoobah"
+          },
+          "playAudio": {
+            "value": ""
+          }
+        }
+      },
+      "ScriptRunner_50625": {
+        "file": "muppet.js",
+        "hotreload": true,
+        "name": "myScript",
+        "owner": "global",
+        "vars": {
+          "dialogue": {
+            "value": ""
+          },
+          "muppetName": {
+            "value": "Woobah"
+          },
+          "playAudio": {
+            "value": ""
+          }
+        }
+      },
+      "ScriptRunner_5920": {
+        "file": "muppet.js",
+        "hotreload": true,
+        "name": "myScript",
+        "owner": "global",
+        "vars": {
+          "dialogue": {
+            "value": ""
+          },
+          "muppetName": {
+            "value": "Loobah"
+          },
+          "playAudio": {
+            "value": ""
+          }
+        }
+      },
+      "ScriptRunner_68341": {
+        "file": "muppet.js",
+        "hotreload": true,
+        "name": "myScript",
+        "owner": "global",
+        "vars": {
+          "dialogue": {
+            "value": ""
+          },
+          "muppetName": {
+            "value": "Doobah"
+          },
+          "playAudio": {
+            "value": ""
+          }
+        }
+      },
+      "ScriptRunner_81025": {
+        "file": "muppet.js",
+        "hotreload": true,
+        "name": "myScript",
+        "owner": "global",
+        "vars": {
+          "dialogue": {
+            "value": ""
+          },
+          "muppetName": {
+            "value": "Poobah"
+          },
+          "playAudio": {
+            "value": ""
+          }
+        }
+      },
+      "Sphere_589": {
+        "heightSegments": 16,
+        "phiLength": 6.283185307179586,
+        "phiStart": 0,
+        "radius": 1,
+        "thetaLength": 3.141592653589793,
+        "thetaStart": 0,
+        "widthSegments": 16
+      },
+      "Sphere_59346": {
+        "heightSegments": 16,
+        "phiLength": 6.283185307179586,
+        "phiStart": 0,
+        "radius": 1,
+        "thetaLength": 3.141592653589793,
+        "thetaStart": 0,
+        "widthSegments": 16
+      },
+      "Sphere_67937": {
+        "heightSegments": 16,
+        "phiLength": 6.283185307179586,
+        "phiStart": 0,
+        "radius": 1,
+        "thetaLength": 3.141592653589793,
+        "thetaStart": 0,
+        "widthSegments": 16
+      },
+      "Sphere_92309": {
+        "heightSegments": 16,
+        "phiLength": 6.283185307179586,
+        "phiStart": 0,
+        "radius": 1,
+        "thetaLength": 3.141592653589793,
+        "thetaStart": 0,
+        "widthSegments": 16
+      },
+      "Sphere_9535": {
+        "heightSegments": 16,
+        "phiLength": 6.283185307179586,
+        "phiStart": 0,
+        "radius": 1,
+        "thetaLength": 3.141592653589793,
+        "thetaStart": 0,
+        "widthSegments": 16
+      }
+    },
+    "Entity": {
+      "Oobas": {
+        "Doobah": {
+          "Ball": {
+            "__meta": {
+              "active": true,
+              "components": {
+                "Material_23984": true,
+                "Sphere_589": true
+              },
+              "layer": 0,
+              "localPosition": {
+                "x": 0,
+                "y": 1.5,
+                "z": 0
+              },
+              "localRotation": {
+                "w": 1,
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "localScale": {
+                "x": 0.2,
+                "y": 0.2,
+                "z": 0.2
+              },
+              "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "rotation": {
+                "w": 1,
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "uuid": 2635068268878
+            }
+          },
+          "Dialogue": {
+            "__meta": {
+              "active": true,
+              "components": {
+                "AudioSource_5612": true
+              },
+              "layer": 0,
+              "localPosition": {
+                "x": 0,
+                "y": 2.4,
+                "z": 0
+              },
+              "localRotation": {
+                "w": 1,
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "localScale": {
+                "x": 0.25,
+                "y": 0.25,
+                "z": 0.25
+              },
+              "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "rotation": {
+                "w": 1,
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "uuid": 2187669299997
+            }
+          },
+          "Eyes": {
+            "Open": {
+              "__meta": {
+                "active": true,
+                "components": {
+                  "GLTF_6104": true
+                },
+                "layer": 0,
+                "localPosition": {
+                  "x": 0,
+                  "y": 0,
+                  "z": 0
+                },
+                "localRotation": {
+                  "w": 1,
+                  "x": -8.527162253696051e-30,
+                  "y": 4.000352837160703e-11,
+                  "z": 2.131602536277351e-19
+                },
+                "localScale": {
+                  "x": 0.125,
+                  "y": 0.12499991666666667,
+                  "z": 0.125
+                },
+                "position": {
+                  "x": -0.15330226719379425,
+                  "y": 1.4996649026870728,
+                  "z": 0.15023857355117798
+                },
+                "rotation": {
+                  "w": 0.9998394846916199,
+                  "x": 0.014515937305986881,
+                  "y": -0.007017492316663265,
+                  "z": -0.007808694615960121
+                },
+                "uuid": 2468183152046
+              }
+            },
+            "Shut": {
+              "__meta": {
+                "active": false,
+                "components": {
+                  "GLTF_21932": true
+                },
+                "layer": 0,
+                "localPosition": {
+                  "x": 0,
+                  "y": 0,
+                  "z": 0
+                },
+                "localRotation": {
+                  "w": 1,
+                  "x": -1.331632972778607e-7,
+                  "y": 1.6734715002630907e-10,
+                  "z": 3.27418175904981e-10
+                },
+                "localScale": {
+                  "x": 0.125,
+                  "y": 0.125,
+                  "z": 0.125
+                },
+                "position": {
+                  "x": -5.820766091346741e-9,
+                  "y": 1.980806700885296e-7,
+                  "z": 6.169979638315226e-9
+                },
+                "rotation": {
+                  "w": 1,
+                  "x": -1.331632972778607e-7,
+                  "y": 1.6734715002630907e-10,
+                  "z": 3.27418175904981e-10
+                },
+                "uuid": 7025313988979
+              }
+            },
+            "__meta": {
+              "active": true,
+              "layer": 0,
+              "localPosition": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "localRotation": {
+                "w": 1,
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "localScale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              },
+              "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "rotation": {
+                "w": 1,
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "uuid": 1508295614105
+            }
+          },
+          "__meta": {
+            "active": true,
+            "components": {
+              "ScriptRunner_68341": true
+            },
+            "layer": 0,
+            "localPosition": {
+              "x": -0.2,
+              "y": 0,
+              "z": -0.35
+            },
+            "localRotation": {
+              "w": 6.123233995736766e-17,
+              "x": 0,
+              "y": 1,
+              "z": 0
+            },
+            "localScale": {
+              "x": 1,
+              "y": 1,
+              "z": 1
+            },
+            "position": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "rotation": {
+              "w": 1,
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "uuid": 5796116821827
+          }
+        },
+        "Loobah": {
+          "Ball": {
+            "__meta": {
+              "active": true,
+              "components": {
+                "Material_25797": true,
+                "Sphere_59346": true
+              },
+              "layer": 0,
+              "localPosition": {
+                "x": 0,
+                "y": 1.5,
+                "z": 0
+              },
+              "localRotation": {
+                "w": 1,
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "localScale": {
+                "x": 0.2,
+                "y": 0.2,
+                "z": 0.2
+              },
+              "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "rotation": {
+                "w": 1,
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "uuid": 6629842811516
+            }
+          },
+          "Dialogue": {
+            "__meta": {
+              "active": true,
+              "components": {
+                "AudioSource_452": true
+              },
+              "layer": 0,
+              "localPosition": {
+                "x": 0,
+                "y": 2.4,
+                "z": 0
+              },
+              "localRotation": {
+                "w": 1,
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "localScale": {
+                "x": 0.25,
+                "y": 0.25,
+                "z": 0.25
+              },
+              "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "rotation": {
+                "w": 1,
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "uuid": 8207122124680
+            }
+          },
+          "Eyes": {
+            "Open": {
+              "__meta": {
+                "active": true,
+                "components": {
+                  "GLTF_97673": true
+                },
+                "layer": 0,
+                "localPosition": {
+                  "x": 0,
+                  "y": 0,
+                  "z": 0
+                },
+                "localRotation": {
+                  "w": 1,
+                  "x": -8.527162253696051e-30,
+                  "y": 4.000352837160703e-11,
+                  "z": 2.131602536277351e-19
+                },
+                "localScale": {
+                  "x": 0.125,
+                  "y": 0.12499991666666667,
+                  "z": 0.125
+                },
+                "position": {
+                  "x": -0.15330226719379425,
+                  "y": 1.4996649026870728,
+                  "z": 0.15023857355117798
+                },
+                "rotation": {
+                  "w": 0.9998394846916199,
+                  "x": 0.014515937305986881,
+                  "y": -0.007017492316663265,
+                  "z": -0.007808694615960121
+                },
+                "uuid": 5926055377250
+              }
+            },
+            "Shut": {
+              "__meta": {
+                "active": false,
+                "components": {
+                  "GLTF_16649": true
+                },
+                "layer": 0,
+                "localPosition": {
+                  "x": 0,
+                  "y": 0,
+                  "z": 0
+                },
+                "localRotation": {
+                  "w": 1,
+                  "x": -1.331632972778607e-7,
+                  "y": 1.6734715002630907e-10,
+                  "z": 3.27418175904981e-10
+                },
+                "localScale": {
+                  "x": 0.125,
+                  "y": 0.125,
+                  "z": 0.125
+                },
+                "position": {
+                  "x": -5.820766091346741e-9,
+                  "y": 1.980806700885296e-7,
+                  "z": 6.169979638315226e-9
+                },
+                "rotation": {
+                  "w": 1,
+                  "x": -1.331632972778607e-7,
+                  "y": 1.6734715002630907e-10,
+                  "z": 3.27418175904981e-10
+                },
+                "uuid": 2337906762867
+              }
+            },
+            "__meta": {
+              "active": true,
+              "layer": 0,
+              "localPosition": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "localRotation": {
+                "w": 1,
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "localScale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              },
+              "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "rotation": {
+                "w": 1,
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "uuid": 7825362149809
+            }
+          },
+          "__meta": {
+            "active": true,
+            "components": {
+              "ScriptRunner_5920": true
+            },
+            "layer": 0,
+            "localPosition": {
+              "x": 0,
+              "y": 0,
+              "z": 2
+            },
+            "localRotation": {
+              "w": 1,
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "localScale": {
+              "x": 1,
+              "y": 1,
+              "z": 1
+            },
+            "position": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "rotation": {
+              "w": 1,
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "uuid": 9503686915177
+          }
+        },
+        "Poobah": {
+          "Ball": {
+            "__meta": {
+              "active": true,
+              "components": {
+                "Material_52738": true,
+                "Sphere_9535": true
+              },
+              "layer": 0,
+              "localPosition": {
+                "x": 0,
+                "y": 1.5,
+                "z": 0
+              },
+              "localRotation": {
+                "w": 1,
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "localScale": {
+                "x": 0.2,
+                "y": 0.2,
+                "z": 0.2
+              },
+              "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "rotation": {
+                "w": 1,
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "uuid": 4942607544299
+            }
+          },
+          "Dialogue": {
+            "__meta": {
+              "active": true,
+              "components": {
+                "AudioSource_29199": true
+              },
+              "layer": 0,
+              "localPosition": {
+                "x": 0,
+                "y": 2.4,
+                "z": 0
+              },
+              "localRotation": {
+                "w": 1,
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "localScale": {
+                "x": 0.25,
+                "y": 0.25,
+                "z": 0.25
+              },
+              "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "rotation": {
+                "w": 1,
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "uuid": 3149742855606
+            }
+          },
+          "Eyes": {
+            "Open": {
+              "__meta": {
+                "active": true,
+                "components": {
+                  "GLTF_86652": true
+                },
+                "layer": 0,
+                "localPosition": {
+                  "x": 0,
+                  "y": 0,
+                  "z": 0
+                },
+                "localRotation": {
+                  "w": 1,
+                  "x": -8.527162253696051e-30,
+                  "y": 4.000352837160703e-11,
+                  "z": 2.131602536277351e-19
+                },
+                "localScale": {
+                  "x": 0.125,
+                  "y": 0.12499991666666667,
+                  "z": 0.125
+                },
+                "position": {
+                  "x": -0.15330226719379425,
+                  "y": 1.4996649026870728,
+                  "z": 0.15023857355117798
+                },
+                "rotation": {
+                  "w": 0.9998394846916199,
+                  "x": 0.014515937305986881,
+                  "y": -0.007017492316663265,
+                  "z": -0.007808694615960121
+                },
+                "uuid": 2200952378180
+              }
+            },
+            "Shut": {
+              "__meta": {
+                "active": false,
+                "components": {
+                  "GLTF_64130": true
+                },
+                "layer": 0,
+                "localPosition": {
+                  "x": 0,
+                  "y": 0,
+                  "z": 0
+                },
+                "localRotation": {
+                  "w": 1,
+                  "x": -1.331632972778607e-7,
+                  "y": 1.6734715002630907e-10,
+                  "z": 3.27418175904981e-10
+                },
+                "localScale": {
+                  "x": 0.125,
+                  "y": 0.125,
+                  "z": 0.125
+                },
+                "position": {
+                  "x": -5.820766091346741e-9,
+                  "y": 1.980806700885296e-7,
+                  "z": 6.169979638315226e-9
+                },
+                "rotation": {
+                  "w": 1,
+                  "x": -1.331632972778607e-7,
+                  "y": 1.6734715002630907e-10,
+                  "z": 3.27418175904981e-10
+                },
+                "uuid": 8128719579348
+              }
+            },
+            "__meta": {
+              "active": true,
+              "layer": 0,
+              "localPosition": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "localRotation": {
+                "w": 1,
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "localScale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              },
+              "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "rotation": {
+                "w": 1,
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "uuid": 8698647938686
+            }
+          },
+          "__meta": {
+            "active": true,
+            "components": {
+              "ScriptRunner_81025": true
+            },
+            "layer": 0,
+            "localPosition": {
+              "x": -1,
+              "y": 0,
+              "z": 1
+            },
+            "localRotation": {
+              "w": 0.8660254037844387,
+              "x": 0,
+              "y": -0.49999999999999994,
+              "z": 0
+            },
+            "localScale": {
+              "x": 1,
+              "y": 1,
+              "z": 1
+            },
+            "position": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "rotation": {
+              "w": 1,
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "uuid": 237787518020
+          }
+        },
+        "Scoobah": {
+          "Ball": {
+            "__meta": {
+              "active": true,
+              "components": {
+                "Material_77248": true,
+                "Sphere_67937": true
+              },
+              "layer": 0,
+              "localPosition": {
+                "x": 0,
+                "y": 1.5,
+                "z": 0
+              },
+              "localRotation": {
+                "w": 1,
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "localScale": {
+                "x": 0.2,
+                "y": 0.2,
+                "z": 0.2
+              },
+              "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "rotation": {
+                "w": 1,
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "uuid": 9714865515957
+            }
+          },
+          "Dialogue": {
+            "__meta": {
+              "active": true,
+              "components": {
+                "AudioSource_91760": true
+              },
+              "layer": 0,
+              "localPosition": {
+                "x": 0,
+                "y": 2.4,
+                "z": 0
+              },
+              "localRotation": {
+                "w": 1,
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "localScale": {
+                "x": 0.25,
+                "y": 0.25,
+                "z": 0.25
+              },
+              "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "rotation": {
+                "w": 1,
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "uuid": 2681107728508
+            }
+          },
+          "Eyes": {
+            "Open": {
+              "__meta": {
+                "active": true,
+                "components": {
+                  "GLTF_23393": true
+                },
+                "layer": 0,
+                "localPosition": {
+                  "x": 0,
+                  "y": 0,
+                  "z": 0
+                },
+                "localRotation": {
+                  "w": 1,
+                  "x": -8.527162253696051e-30,
+                  "y": 4.000352837160703e-11,
+                  "z": 2.131602536277351e-19
+                },
+                "localScale": {
+                  "x": 0.125,
+                  "y": 0.12499991666666667,
+                  "z": 0.125
+                },
+                "position": {
+                  "x": -0.15330226719379425,
+                  "y": 1.4996649026870728,
+                  "z": 0.15023857355117798
+                },
+                "rotation": {
+                  "w": 0.9998394846916199,
+                  "x": 0.014515937305986881,
+                  "y": -0.007017492316663265,
+                  "z": -0.007808694615960121
+                },
+                "uuid": 4107187611756
+              }
+            },
+            "Shut": {
+              "__meta": {
+                "active": false,
+                "components": {
+                  "GLTF_48121": true
+                },
+                "layer": 0,
+                "localPosition": {
+                  "x": 0,
+                  "y": 0,
+                  "z": 0
+                },
+                "localRotation": {
+                  "w": 1,
+                  "x": -1.331632972778607e-7,
+                  "y": 1.6734715002630907e-10,
+                  "z": 3.27418175904981e-10
+                },
+                "localScale": {
+                  "x": 0.125,
+                  "y": 0.125,
+                  "z": 0.125
+                },
+                "position": {
+                  "x": -5.820766091346741e-9,
+                  "y": 1.980806700885296e-7,
+                  "z": 6.169979638315226e-9
+                },
+                "rotation": {
+                  "w": 1,
+                  "x": -1.331632972778607e-7,
+                  "y": 1.6734715002630907e-10,
+                  "z": 3.27418175904981e-10
+                },
+                "uuid": 1170008551344
+              }
+            },
+            "__meta": {
+              "active": true,
+              "layer": 0,
+              "localPosition": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "localRotation": {
+                "w": 1,
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "localScale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              },
+              "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "rotation": {
+                "w": 1,
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "uuid": 1728733191470
+            }
+          },
+          "__meta": {
+            "active": true,
+            "components": {
+              "ScriptRunner_12915": true
+            },
+            "layer": 0,
+            "localPosition": {
+              "x": 1,
+              "y": 0,
+              "z": 1.5
+            },
+            "localRotation": {
+              "w": 0.8660254037844387,
+              "x": 0,
+              "y": 0.49999999999999994,
+              "z": 0
+            },
+            "localScale": {
+              "x": 1,
+              "y": 1,
+              "z": 1
+            },
+            "position": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "rotation": {
+              "w": 1,
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "uuid": 95060561825
+          }
+        },
+        "Woobah": {
+          "Ball": {
+            "__meta": {
+              "active": true,
+              "components": {
+                "Material_20360": true,
+                "Sphere_92309": true
+              },
+              "layer": 0,
+              "localPosition": {
+                "x": 0,
+                "y": 1.5,
+                "z": 0
+              },
+              "localRotation": {
+                "w": 1,
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "localScale": {
+                "x": 0.2,
+                "y": 0.2,
+                "z": 0.2
+              },
+              "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "rotation": {
+                "w": 1,
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "uuid": 3927150405381
+            }
+          },
+          "Dialogue": {
+            "__meta": {
+              "active": true,
+              "components": {
+                "AudioSource_36482": true
+              },
+              "layer": 0,
+              "localPosition": {
+                "x": 0,
+                "y": 2.4,
+                "z": 0
+              },
+              "localRotation": {
+                "w": 1,
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "localScale": {
+                "x": 0.25,
+                "y": 0.25,
+                "z": 0.25
+              },
+              "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "rotation": {
+                "w": 1,
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "uuid": 2037521509450
+            }
+          },
+          "Eyes": {
+            "Open": {
+              "__meta": {
+                "active": true,
+                "components": {
+                  "GLTF_41290": true
+                },
+                "layer": 0,
+                "localPosition": {
+                  "x": 0,
+                  "y": 0,
+                  "z": 0
+                },
+                "localRotation": {
+                  "w": 1,
+                  "x": -8.527162253696051e-30,
+                  "y": 4.000352837160703e-11,
+                  "z": 2.131602536277351e-19
+                },
+                "localScale": {
+                  "x": 0.125,
+                  "y": 0.12499991666666667,
+                  "z": 0.125
+                },
+                "position": {
+                  "x": -0.15330226719379425,
+                  "y": 1.4996649026870728,
+                  "z": 0.15023857355117798
+                },
+                "rotation": {
+                  "w": 0.9998394846916199,
+                  "x": 0.014515937305986881,
+                  "y": -0.007017492316663265,
+                  "z": -0.007808694615960121
+                },
+                "uuid": 8842993432264
+              }
+            },
+            "Shut": {
+              "__meta": {
+                "active": false,
+                "components": {
+                  "GLTF_10358": true
+                },
+                "layer": 0,
+                "localPosition": {
+                  "x": 0,
+                  "y": 0,
+                  "z": 0
+                },
+                "localRotation": {
+                  "w": 1,
+                  "x": -1.331632972778607e-7,
+                  "y": 1.6734715002630907e-10,
+                  "z": 3.27418175904981e-10
+                },
+                "localScale": {
+                  "x": 0.125,
+                  "y": 0.125,
+                  "z": 0.125
+                },
+                "position": {
+                  "x": -5.820766091346741e-9,
+                  "y": 1.980806700885296e-7,
+                  "z": 6.169979638315226e-9
+                },
+                "rotation": {
+                  "w": 1,
+                  "x": -1.331632972778607e-7,
+                  "y": 1.6734715002630907e-10,
+                  "z": 3.27418175904981e-10
+                },
+                "uuid": 5688483838268
+              }
+            },
+            "__meta": {
+              "active": true,
+              "layer": 0,
+              "localPosition": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "localRotation": {
+                "w": 1,
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "localScale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              },
+              "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "rotation": {
+                "w": 1,
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "uuid": 2050898511888
+            }
+          },
+          "__meta": {
+            "active": true,
+            "components": {
+              "ScriptRunner_50625": true
+            },
+            "layer": 0,
+            "localPosition": {
+              "x": 1,
+              "y": 0,
+              "z": 0
+            },
+            "localRotation": {
+              "w": 0.5000000000000001,
+              "x": 0,
+              "y": 0.8660254037844386,
+              "z": 0
+            },
+            "localScale": {
+              "x": 1,
+              "y": 1,
+              "z": 1
+            },
+            "position": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "rotation": {
+              "w": 1,
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "uuid": 3865215531480
+          }
+        },
+        "__meta": {
+          "active": true,
+          "layer": 0,
+          "localPosition": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "localRotation": {
+            "w": 1,
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "localScale": {
+            "x": 1,
+            "y": 1,
+            "z": 1
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "rotation": {
+            "w": 1,
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "uuid": 1409484926997
+        }
+      }
+    }
+  },
+  "description": "",
+  "folder": "Muppets",
+  "icon": "📦",
+  "itemType": "entity",
+  "last_used": 1763259573499,
+  "name": "Oobas",
+  "syncedAt": 1763259575922
+}

@@ -1,0 +1,29 @@
+x = ['''{
+     "type":"file-history-snapshot",
+     "messageId":"deea92ba-8883-442c-8298-0130d9a5d343",
+     "snapshot":{
+        "messageId":"deea92ba-8883-442c-8298-0130d9a5d343",
+        "trackedFileBackups":{},
+        "timestamp":"2025-12-18T06:58:28.937Z"
+     },
+     "isSnapshotUpdate":false
+     }''',
+  '''{
+    "parentUuid":null,
+    "isSidechain":false,
+    "userType":"external",
+    "cwd":"/home/jason/TippyCodeLink",
+    "sessionId":"dead68e0-58e2-4529-974a-0cdfe63916a6",
+    "version":"2.0.65",
+    "gitBranch":"master",
+    "type":"user",
+    "message":{"role":"user","content":"hi"},
+    "uuid":"deea92ba-8883-442c-8298-0130d9a5d343",
+    "timestamp":"2025-12-18T06:58:28.927Z",
+    "thinkingMetadata":{"level":"none","disabled":true,"triggers":[]},"todos":[]}',
+  '{"parentUuid":"deea92ba-8883-442c-8298-0130d9a5d343","isSidechain":false,"userType":"external","cwd":"/home/jason/TippyCodeLink","sessionId":"dead6
+  8e0-58e2-4529-974a-0cdfe63916a6","version":"2.0.65","gitBranch":"master","message":{"model":"claude-opus-4-5-20251101","id":"msg_01K9WVsy89kQxXoGD9N
+  9TmcM","type":"message","role":"assistant","content":[{"type":"text","text":"Hi! How can I help you
+  today?"}],"stop_reason":null,"stop_sequence":null,"usage":{"input_tokens":3,"cache_creation_input_tokens":8777,"cache_read_input_tokens":12859,"cach
+  e_creation":{"ephemeral_5m_input_tokens":8777,"ephemeral_1h_input_tokens":0},"output_tokens":1,"service_tier":"standard"}},"requestId":"req_011CWDie
+  A9uXmrMUGsAC1jTy","type":"assistant","uuid":"24f61a2a-72bd-4e83-92cc-e0b88e25e6c8","timestamp":"2025-12-18T06:58:31.926Z"}''']

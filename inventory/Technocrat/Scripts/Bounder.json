@@ -1,0 +1,79 @@
+{
+  "author": "Technocrat",
+  "created": 1765422553648,
+  "data": {
+    "Components": {
+      "Box_7337": {
+        "depth": 1,
+        "height": 1,
+        "width": 1
+      },
+      "Material_6864": {
+        "color": {
+          "a": 0.1,
+          "b": 0.9921568627450981,
+          "g": 0.8901960784313725,
+          "r": 0.01568627450980392
+        },
+        "generateMipMaps": true,
+        "shaderName": "Unlit/DiffuseTransparent",
+        "side": 0,
+        "texture": ""
+      },
+      "ScriptRunner_4560": {
+        "file": "Bounder.js",
+        "hotreload": true,
+        "name": "myScript",
+        "owner": "global"
+      }
+    },
+    "Entity": {
+      "Bounder": {
+        "__meta": {
+          "active": true,
+          "components": {
+            "Box_7337": true,
+            "Material_6864": true,
+            "ScriptRunner_4560": true
+          },
+          "layer": 0,
+          "localPosition": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "localRotation": {
+            "w": 1,
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "localScale": {
+            "x": 1,
+            "y": 1,
+            "z": 1
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "rotation": {
+            "w": 1,
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "uuid": 7359092547380
+        }
+      }
+    }
+  },
+  "description": "",
+  "folder": "Scripts",
+  "icon": "📦",
+  "itemType": "entity",
+  "last_used": 1765422553648,
+  "name": "Bounder",
+  "syncedAt": 1765830564340
+}

@@ -121,22 +121,13 @@ class PepperInject {
                         <div style="display: flex; flex-direction: column; flex: 1; min-width: 0;">
 
                             <!-- Input History Section -->
-                            <div style="display: flex; flex-direction: column; margin: 8px; background: #1a2a1a; border-radius: 6px; border: 1px solid #2d5a2d; max-height: 30%;">
+                            <div style="display: flex; flex-direction: column; margin: 8px; background: #1a2a1a; border-radius: 6px; border: 1px solid #2d5a2d;">
                                 <div style="background: #2d5a2d; padding: 6px 10px; border-radius: 6px 6px 0 0;">
                                     <span style="color: #90EE90; font-size: 11px; font-weight: bold;">📝 Input</span>
                                 </div>
-                                <div id="pepperinject-history" style="flex: 1; overflow-y: auto; padding: 0;">
-                                    <textarea id="pepperinject-history-label" placeholder="No input yet..." style="width: 100%; height: 100%; min-height: 60px; background: transparent; border: none; outline: none; resize: none; color: #e0e0e0; font-size: 12px; font-family: inherit; padding: 8px; box-sizing: border-box;"></textarea>
-                                </div>
-                            </div>
-
-                            <!-- Live Transcript Section -->
-                            <div style="display: flex; flex-direction: column; margin: 8px; margin-top: 0; background: #1e1e1e; border-radius: 6px; flex: 1; min-height: 60px; max-height: 25%;">
-                                <div style="background: #333; padding: 6px 10px; border-radius: 6px 6px 0 0;">
-                                    <span style="color: #fff; font-size: 11px; font-weight: bold;">🎙️ Live</span>
-                                </div>
-                                <div style="flex: 1; overflow-y: auto; padding: 8px;">
-                                    <span id="pepperinject-transcript-label" style="color: #666; font-size: 12px;">Waiting for transcript...</span>
+                                <div id="pepperinject-history" style="flex: 1; padding: 0; display: flex; flex-direction: column;">
+                                    <textarea id="pepperinject-history-label" placeholder="No input yet..." style="width: 100%; min-height: 60px; background: transparent; border: none; outline: none; resize: none; overflow: hidden; color: #e0e0e0; font-size: 12px; font-family: inherit; padding: 8px; box-sizing: border-box;"></textarea>
+                                    <div id="pepperinject-transcript-label" style="color: #666; font-size: 12px; padding: 8px; border-top: 1px solid #2d5a2d; min-height: 20px;"></div>
                                 </div>
                             </div>
 
@@ -156,7 +147,7 @@ class PepperInject {
                         <div class="pepperinject-dock">
                             <button id="pepperinject-rec-btn" class="pepperinject-btn-rec" title="Hold to record">🔴</button>
                             <button id="pepperinject-send-btn" class="pepperinject-btn pepperinject-btn-primary" title="Send">📤</button>
-                            <button id="pepperinject-process-btn" class="pepperinject-btn pepperinject-btn-success" title="Process">✨</button>
+                            <button id="pepperinject-process-btn" class="pepperinject-btn pepperinject-btn-success" title="Process">⚡</button>
                             <button id="pepperinject-clear-btn" class="pepperinject-btn pepperinject-btn-danger" title="Clear">🗑️</button>
                             <button id="pepperinject-clearall-btn" class="pepperinject-btn pepperinject-btn-darkred" title="Clear All">💥</button>
                         </div>
@@ -404,30 +395,16 @@ class PepperInject {
             clearAllBtn.addEventListener('mousedown', () => this.clearAll());
         }
 
-        // Rec button - walkie-talkie style (hold to record)
+        // Rec button - toggle style (click to start/stop)
         const recBtn = document.getElementById('pepperinject-rec-btn');
         if (recBtn) {
-            // Pointer down - start recording
-            recBtn.addEventListener('pointerdown', (e) => {
+            recBtn.addEventListener('click', (e) => {
                 e.preventDefault();
-                this.startRecording();
-            });
-
-            // Pointer up - stop recording
-            recBtn.addEventListener('pointerup', () => {
-                this.stopRecording();
-            });
-
-            // Pointer leave - stop recording (handle drag off button)
-            recBtn.addEventListener('pointerleave', () => {
                 if (this.isRecording) {
                     this.stopRecording();
+                } else {
+                    this.startRecording();
                 }
-            });
-
-            // Prevent context menu on long press (mobile)
-            recBtn.addEventListener('contextmenu', (e) => {
-                e.preventDefault();
             });
         }
 
@@ -451,6 +428,15 @@ class PepperInject {
         const shellSendBtn = document.getElementById('pepperinject-shell-send-btn');
         if (shellSendBtn) {
             shellSendBtn.addEventListener('mousedown', () => this.sendShellInput());
+        }
+
+        // History textarea edit sync with auto-resize
+        const historyTextarea = document.getElementById('pepperinject-history-label');
+        if (historyTextarea) {
+            historyTextarea.addEventListener('input', () => {
+                this.history = historyTextarea.value.split("\n");
+                this.autoResizeTextarea(historyTextarea);
+            });
         }
 
         // Page switching
@@ -547,7 +533,7 @@ class PepperInject {
 
             if (data === null || data === "") {
                 if (this.transcriptLabel) {
-                    this.transcriptLabel.textContent = "No transcript available";
+                    this.transcriptLabel.textContent = "";
                     this.transcriptLabel.style.color = "#666";
                 }
                 if (this.lastBuffer && this.lastBuffer.trim() !== "") {
@@ -560,7 +546,7 @@ class PepperInject {
                 this.lastBuffer = data;
                 if (this.transcriptLabel) {
                     this.transcriptLabel.textContent = data;
-                    this.transcriptLabel.style.color = "#fff";
+                    this.transcriptLabel.style.color = "#ffcc00";
                     console.log("PepperInject: Updated transcript label to:", data);
                 } else {
                     console.error("PepperInject: transcriptLabel not found!");
@@ -621,6 +607,17 @@ class PepperInject {
         } else {
             this.historyLabel.value = "";
         }
+
+        // Auto-resize after updating content
+        this.autoResizeTextarea(this.historyLabel);
+    }
+
+    autoResizeTextarea(textarea) {
+        if (!textarea) return;
+        // Reset height to auto to get accurate scrollHeight
+        textarea.style.height = 'auto';
+        // Set height to scrollHeight, with min-height enforced by CSS
+        textarea.style.height = textarea.scrollHeight + 'px';
     }
 
     updateProcessButton() {
@@ -633,12 +630,12 @@ class PepperInject {
             btn.style.color = "#000";
             btn.disabled = true;
         } else if (this.isRunDisabled) {
-            btn.textContent = "Process";
+            btn.textContent = "⚡";
             btn.style.background = "#666";
             btn.style.color = "#999";
             btn.disabled = true;
         } else {
-            btn.textContent = "Process";
+            btn.textContent = "⚡";
             btn.style.background = "#28a745";
             btn.style.color = "#fff";
             btn.disabled = false;

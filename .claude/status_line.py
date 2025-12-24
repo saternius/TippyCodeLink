@@ -36,11 +36,14 @@ def simplify(data):
         content = data['message']['content']
         if type(content) == str:
             content = [content]
-            
+
         for content_item in content:
-            if 'signature' in content_item:
-                del content_item['signature']
-        
+            # Only process dict items (skip strings)
+            if isinstance(content_item, dict):
+                # Remove signature from thinking blocks
+                if 'signature' in content_item:
+                    del content_item['signature']
+
         message = {
             "session_id": data['sessionId'],
             'timestamp': data['timestamp'],
@@ -55,14 +58,14 @@ full_data = json.load(sys.stdin)
 try:
     transcript_data = open(full_data['transcript_path']).read().strip().split("\n")
     full_data['transcript'] = [simplify(json.loads(data)) for data in transcript_data]
+
+    last_status_path = f"{config_path}/last_status.json"
+    outfile = open(last_status_path, "w")
+    outfile.write(json.dumps(transcript_data))
+    outfile.close()
+
 except Exception as e:
     print(e)
-
-
-# print(f"SessionID: {data['sessionId']}")  
-# last_status_path = f"{config_path}/last_status.json"
-# outfile = open(last_status_path, "w")
-# outfile.write(json.dumps(data))
-# outfile.close()
+    
 print(f"SessionID: {full_data['session_id']}")  
 

@@ -76,6 +76,20 @@ def signal_handler(signum, frame):
     sys.exit(130)  # 128 + SIGINT(2)
 
 
+def extract_value(raw_value):
+    """Parse timestamp:value format, return actual value.
+
+    Format: "1735012345:actualvalue" where timestamp is all digits.
+    This allows sending the same value multiple times by using unique timestamps.
+    """
+    if raw_value and ':' in raw_value:
+        parts = raw_value.split(':', 1)
+        # Check if first part looks like a timestamp (all digits)
+        if parts[0].isdigit():
+            return parts[1]
+    return raw_value
+
+
 def stdin_listener(event):
     """Handle stdin input from Firebase"""
     global last_stdin_id
@@ -89,14 +103,14 @@ def stdin_listener(event):
         for key, value in sorted(event.data.items(), key=lambda x: int(x[0])):
             idx = int(key)
             if idx > last_stdin_id and value is not None:
-                stdin_queue.put(value)
+                stdin_queue.put(extract_value(value))
                 last_stdin_id = idx
     elif event.path != '/':
         # Single entry added
         try:
             idx = int(event.path.strip('/'))
             if idx > last_stdin_id:
-                stdin_queue.put(event.data)
+                stdin_queue.put(extract_value(event.data))
                 last_stdin_id = idx
         except ValueError:
             pass

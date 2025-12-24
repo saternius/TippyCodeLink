@@ -369,6 +369,83 @@ class PepperInject {
                 0%, 100% { box-shadow: 0 0 12px rgba(220, 53, 69, 0.6); }
                 50% { box-shadow: 0 0 20px rgba(220, 53, 69, 0.9); }
             }
+            /* AskUserQuestion styles */
+            .pepperinject-ask-container {
+                margin: 12px 0;
+                padding: 12px;
+                background: #1a2a3a;
+                border-radius: 8px;
+                border: 1px solid #2a4a6a;
+            }
+            .pepperinject-question {
+                margin-bottom: 12px;
+            }
+            .pepperinject-question:last-child {
+                margin-bottom: 0;
+            }
+            .pepperinject-question-header {
+                color: #e0e0e0;
+                font-size: 13px;
+                margin-bottom: 10px;
+            }
+            .pepperinject-question-tag {
+                background: #0051e5;
+                color: #fff;
+                padding: 2px 8px;
+                border-radius: 4px;
+                font-size: 10px;
+                font-weight: bold;
+                margin-right: 8px;
+            }
+            .pepperinject-options {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+            .pepperinject-option-btn {
+                background: #2a3a4a;
+                border: 1px solid #3a5a7a;
+                border-radius: 6px;
+                padding: 10px 16px;
+                cursor: pointer;
+                transition: all 0.15s;
+                display: flex;
+                flex-direction: column;
+                align-items: flex-start;
+                min-width: 120px;
+            }
+            .pepperinject-option-btn:hover {
+                background: #3a4a5a;
+                border-color: #5a8aba;
+                transform: translateY(-1px);
+            }
+            .pepperinject-option-btn:active {
+                transform: translateY(0);
+                background: #0051e5;
+            }
+            .pepperinject-option-num {
+                background: #0051e5;
+                color: #fff;
+                width: 20px;
+                height: 20px;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 11px;
+                font-weight: bold;
+                margin-bottom: 6px;
+            }
+            .pepperinject-option-label {
+                color: #fff;
+                font-size: 13px;
+                font-weight: 600;
+            }
+            .pepperinject-option-desc {
+                color: #888;
+                font-size: 10px;
+                margin-top: 4px;
+            }
         `;
         document.head.appendChild(styleEl);
     }
@@ -1117,6 +1194,10 @@ class PepperInject {
             }
 
             if (item.type === 'tool_use') {
+                // Special handling for AskUserQuestion - render as clickable buttons
+                if (item.name === 'AskUserQuestion' && item.input?.questions) {
+                    return this.renderAskUserQuestion(item.input.questions);
+                }
                 return this.renderToolBlock('tool_use', item.name, item.input);
             }
 
@@ -1163,6 +1244,53 @@ class PepperInject {
         block.className = 'pepperinject-thinking-block';
         block.textContent = content;
         return block;
+    }
+
+    renderAskUserQuestion(questions) {
+        const container = document.createElement('div');
+        container.className = 'pepperinject-ask-container';
+
+        for (const q of questions) {
+            const questionDiv = document.createElement('div');
+            questionDiv.className = 'pepperinject-question';
+
+            // Question header
+            const header = document.createElement('div');
+            header.className = 'pepperinject-question-header';
+            header.innerHTML = `<span class="pepperinject-question-tag">${q.header || 'Question'}</span> ${q.question}`;
+            questionDiv.appendChild(header);
+
+            // Options as buttons
+            const optionsDiv = document.createElement('div');
+            optionsDiv.className = 'pepperinject-options';
+
+            q.options.forEach((opt, idx) => {
+                const optionNumber = idx + 1;  // 1-based index
+                const btn = document.createElement('button');
+                btn.className = 'pepperinject-option-btn';
+                btn.innerHTML = `<span class="pepperinject-option-num">${optionNumber}</span>
+                                <span class="pepperinject-option-label">${opt.label}</span>
+                                <span class="pepperinject-option-desc">${opt.description || ''}</span>`;
+                btn.addEventListener('click', () => this.sendOptionToStdin(optionNumber));
+                optionsDiv.appendChild(btn);
+            });
+
+            questionDiv.appendChild(optionsDiv);
+            container.appendChild(questionDiv);
+        }
+
+        return container;
+    }
+
+    sendOptionToStdin(optionIndex) {
+        // Use timestamp:index format to ensure uniqueness
+        // optionIndex is 1-based (1, 2, 3, etc.) to match Claude's display
+        const timestamp = Date.now();
+        const value = `${timestamp}:${optionIndex}`;
+        this.sendToShellStdin(value);
+
+        // Visual feedback
+        console.log(`PepperInject: Sent option index ${optionIndex} as ${value}`);
     }
 
     // ============================================

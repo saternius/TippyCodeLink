@@ -76,3 +76,21 @@ When editing inventory files as Claude, always sync after changes:
 ```bash
 python3 /home/jason/TippyCodeLink/claude_sync.py <edited_file_path>
 ```
+
+## Script Hot-Reload Lifecycle
+
+When a script file is synced to Firebase (via Ctrl+S or `claude_sync.py`), the ScriptRunnerComponent in Banter detects the change and hot-reloads:
+
+1. `ctx.onDestroy()` - Called on the current context (cleanup)
+2. New context created via `new Function().call(ctx)`
+3. `ctx.onStart()` - Called on the new context
+4. `ctx.onLoaded()` - Called if entity has finished loading
+
+**Lifecycle hooks available in scripts:**
+- `onStart()` - Script starts running
+- `onLoaded()` - Entity finished loading
+- `onUpdate()` - Called each frame while running
+- `onDestroy()` - Script stopping (cleanup timers, listeners)
+- `onVarChange(name, value)` - A var was changed externally
+
+**Var persistence:** Script vars are preserved across reloads. Priority: historical values > properties > ScriptAsset defaults.

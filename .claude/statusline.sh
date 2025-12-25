@@ -8,4 +8,4 @@
 
 # echo "[$MODEL_DISPLAY] 📁 ${CURRENT_DIR##*/}"
 
-python3 /home/jason/TippyCodeLink/.claude/status_line.py
+/home/jason/venv/bin/python3 /home/jason/TippyCodeLink/.claude/status_line.py

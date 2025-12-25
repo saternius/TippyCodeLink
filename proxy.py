@@ -217,6 +217,7 @@ def main():
     env['COLORTERM'] = 'truecolor'
     env['COLUMNS'] = '80'
     env['LINES'] = '24'
+    env['CLAUDE_PROXY_SHELL'] = name
 
     # Run the command with PTY
     try:

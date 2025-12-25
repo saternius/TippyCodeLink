@@ -13,11 +13,10 @@ from pathlib import Path
 # Port for the linker service
 LINKER_PORT = 5005
 
-# Base paths
-INSPECTOR_ROOT = Path("/home/jason/Desktop/sdq3/SideQuest.Banter.Unity/Injection/inspector")
-CODE_LINKER_PATH = INSPECTOR_ROOT / "extensions" / "code_linker"
-INVENTORY_PATH = CODE_LINKER_PATH / "inventory"
-UPDATE_SCRIPT = CODE_LINKER_PATH / "update_on_save.py"
+# Base paths - relative to this script's location
+SCRIPT_DIR = Path(__file__).resolve().parent
+INVENTORY_PATH = SCRIPT_DIR / "inventory"
+UPDATE_SCRIPT = SCRIPT_DIR / "update_on_save.py"
 
 def sync_file(file_path):
     """
@@ -50,7 +49,7 @@ def sync_file(file_path):
             [sys.executable, str(UPDATE_SCRIPT), str(file_path)],
             capture_output=True,
             text=True,
-            cwd=str(INSPECTOR_ROOT)
+            cwd=str(SCRIPT_DIR)
         )
 
         if result.returncode == 0:

@@ -118,7 +118,7 @@
 
                             <!-- Input Area -->
                             <div style="display: flex; align-items: center; gap: 8px; padding: 8px; background: #242424; border-top: 2px solid #3a3a3a;">
-                                <span style="color: #888; font-size: 11px; flex-shrink: 0;">Input:</span>
+                                <button id="pepperinject-plan-toggle" style="padding: 4px 8px; font-size: 10px; border-radius: 4px; border: 2px solid #3a3a3a; background: #2a2a2a; color: #888; cursor: pointer; transition: all 0.15s; flex-shrink: 0;" title="Toggle Plan Mode">📋 Plan</button>
                                 <textarea id="pepperinject-inputref-label" placeholder="Waiting for input..." style="flex: 1; padding: 6px 10px; background: #0f0f0f; border: 1px solid #3a3a3a; border-radius: 4px; color: #666; font-size: 11px; font-family: inherit; resize: none; outline: none; min-height: 24px; overflow-y: auto;"></textarea>
                                 <button id="pepperinject-shell-clear-btn" class="pepperinject-btn" style="padding: 6px 10px; font-size: 11px;">Clear</button>
                                 <button id="pepperinject-shell-send-btn" class="pepperinject-btn pepperinject-btn-success" style="padding: 6px 10px; font-size: 11px;">Send</button>

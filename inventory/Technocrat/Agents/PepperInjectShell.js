@@ -137,6 +137,12 @@
                 }
             });
 
+            // Listen for plan mode changes
+            this.shellRef.child('meta/plan').on('value', (snapshot) => {
+                const planMode = snapshot.val() === true;
+                this.updatePlanToggleVisual(planMode);
+            });
+
             // Listen for messages
             this.shellRef.on('child_added', (snapshot) => {
                 const key = snapshot.key;
@@ -232,6 +238,27 @@
                 btn.style.background = "#2a2a2a";
                 btn.style.borderColor = "#3a3a3a";
                 btn.style.color = "#e8e8e8";
+            }
+        },
+
+        updatePlanToggleVisual(isActive) {
+            const btn = document.getElementById('pepperinject-plan-toggle');
+            if (!btn) return;
+
+            if (isActive) {
+                // Active: Valley green glow aesthetic
+                btn.style.background = '#1a2a1a';
+                btn.style.borderColor = '#90EE90';
+                btn.style.color = '#90EE90';
+                btn.style.boxShadow = '0 0 8px rgba(144, 238, 144, 0.4)';
+                btn.textContent = '📋 Plan ✓';
+            } else {
+                // Inactive: Neutral gray terrain
+                btn.style.background = '#2a2a2a';
+                btn.style.borderColor = '#3a3a3a';
+                btn.style.color = '#888';
+                btn.style.boxShadow = 'none';
+                btn.textContent = '📋 Plan';
             }
         },
 
@@ -678,7 +705,8 @@
             const sendCustom = () => {
                 const text = inputField.value.trim();
                 if (text) {
-                    this.selectOption(text);  // Pass custom text
+                    // Pass custom text with the "Other" option number
+                    this.selectOption(text, otherOptionNumber);
                 }
             };
 
@@ -695,15 +723,22 @@
             containerEl.appendChild(questionDiv);
         },
 
-        selectOption(value) {
+        selectOption(value, otherOptionNumber = null) {
             const state = this.askQuestionState;
             if (!state) return;
 
-            // Store the answer
-            state.answers.push(value);
+            // Store the answer - structured object for custom text, raw value for numbered options
+            if (otherOptionNumber !== null) {
+                // Custom text answer: store with the "Other" option number
+                state.answers.push({ otherNum: otherOptionNumber, text: value });
+                console.log(`PepperInject: Selected custom text for option ${otherOptionNumber}: "${value}"`);
+            } else {
+                state.answers.push(value);
+                console.log(`PepperInject: Selected option ${value}`);
+            }
             state.currentIndex++;
 
-            console.log(`PepperInject: Selected option ${value}, answers so far:`, state.answers);
+            console.log(`PepperInject: Answers so far:`, state.answers);
 
             // Render next question or submit all
             this.renderCurrentQuestion();
@@ -723,40 +758,80 @@
             `;
 
             // Send answers sequentially with delays
-            // All but last use :noenter, last one triggers the Enter
+            // All options use :raw flag to skip bracketed paste (Claude Code doesn't support it during questions)
+            // Custom text answers require two sends: option number (no Enter), then text
+            let cumulativeDelay = 0;
+
             answers.forEach((answer, idx) => {
                 const isLast = idx === answers.length - 1;
-                const delay = idx * 150;  // 150ms between each
+                const currentDelay = cumulativeDelay;
 
-                setTimeout(() => {
-                    const ts = Date.now();
-                    const suffix = isLast ? '' : ':noenter';
-                    const value = `${ts}:${answer}${suffix}`;
-                    this.sendToShellStdin(value);
+                if (typeof answer === 'object' && answer.otherNum) {
+                    // Custom text answer: send option number first (NO Enter), then text
+                    setTimeout(() => {
+                        const ts1 = Date.now();
+                        // Option number uses :noenter:raw - raw mode skips bracketed paste
+                        const value1 = `${ts1}:${answer.otherNum}:noenter:raw`;
+                        this.sendToShellStdin(value1);
+                        console.log(`PepperInject: Sent "Other" option ${answer.otherNum} (no Enter, raw)`);
+                    }, currentDelay);
 
-                    console.log(`PepperInject: Sent answer ${idx + 1}/${answers.length}: ${value}`);
+                    // Send custom text after 300ms delay - ALWAYS with Enter to submit the answer
+                    setTimeout(() => {
+                        const ts2 = Date.now();
+                        // Custom text always needs Enter to submit, uses :raw for raw mode
+                        const value2 = `${ts2}:${answer.text}:raw`;
+                        this.sendToShellStdin(value2);
+                        console.log(`PepperInject: Sent custom text: "${answer.text}" (with Enter, raw)`);
 
-                    if (isLast) {
-                        // Update UI to show completion
-                        containerEl.innerHTML = `
-                            <div style="color: #90EE90; padding: 8px; text-align: center; font-size: 12px;">
-                                Answers submitted
-                            </div>
-                        `;
-                        this.askQuestionState = null;
-                    }
-                }, delay);
+                        if (isLast) {
+                            containerEl.innerHTML = `
+                                <div style="color: #90EE90; padding: 8px; text-align: center; font-size: 12px;">
+                                    Answers submitted
+                                </div>
+                            `;
+                            this.askQuestionState = null;
+                        }
+                    }, currentDelay + 300);
+
+                    // Custom text answers need more time:
+                    // - 200ms for option number to buffer
+                    // - 200ms for text + Enter to be processed by Claude Code
+                    // - 200ms buffer for Claude Code to process before next answer
+                    cumulativeDelay += 600;
+                } else {
+                    // Regular numbered option - use :raw flag
+                    setTimeout(() => {
+                        const ts = Date.now();
+                        // Use :raw flag for raw mode, add :noenter for non-last answers
+                        const suffix = isLast ? ':raw' : ':noenter:raw';
+                        const value = `${ts}:${answer}${suffix}`;
+                        this.sendToShellStdin(value);
+                        console.log(`PepperInject: Sent answer ${idx + 1}/${answers.length}: ${value} (raw)`);
+
+                        if (isLast) {
+                            containerEl.innerHTML = `
+                                <div style="color: #90EE90; padding: 8px; text-align: center; font-size: 12px;">
+                                    Answers submitted
+                                </div>
+                            `;
+                            this.askQuestionState = null;
+                        }
+                    }, currentDelay);
+
+                    cumulativeDelay += 150;
+                }
             });
         },
 
         sendOptionToStdin(optionIndex) {
-            // Legacy method - kept for compatibility with other uses
-            // Use timestamp:index format to ensure uniqueness
+            // Legacy method - kept for compatibility with Edit confirmation
+            // Use timestamp:index:raw format - raw mode skips bracketed paste
             const timestamp = Date.now();
-            const value = `${timestamp}:${optionIndex}`;
+            const value = `${timestamp}:${optionIndex}:raw`;
             this.sendToShellStdin(value);
 
-            console.log(`PepperInject: Sent option index ${optionIndex} as ${value}`);
+            console.log(`PepperInject: Sent option index ${optionIndex} as ${value} (raw)`);
         },
 
         renderEditConfirmation(input) {
@@ -866,11 +941,12 @@
         },
 
         sendCustomTextToStdin(text) {
-            // Use timestamp:text format for custom input
+            // Use timestamp:text:raw format for custom input
+            // Raw mode skips bracketed paste which Claude Code doesn't support during prompts
             const timestamp = Date.now();
-            const value = `${timestamp}:${text}`;
+            const value = `${timestamp}:${text}:raw`;
             this.sendToShellStdin(value);
-            console.log(`PepperInject: Sent custom text as ${value}`);
+            console.log(`PepperInject: Sent custom text as ${value} (raw)`);
         },
 
         // ============================================

@@ -42,6 +42,10 @@ ref = None
 master_fd = None
 stdin_queue = queue.Queue()
 last_stdin_id = -1
+stdin_log = None  # Debug log file handle
+plan_change_queue = queue.Queue()  # Queue for plan mode changes
+original_command = None  # Store the original command with all flags
+plan_listener_initialized = False  # Skip initial listener event
 
 
 def signal_handler(signum, frame):
@@ -77,31 +81,60 @@ def signal_handler(signum, frame):
 
 
 def extract_value(raw_value):
-    """Parse timestamp:value[:noenter] format, return (value, send_enter) tuple.
+    """Parse timestamp:value[:noenter][:raw] format, return (value, send_enter, use_raw) tuple.
 
-    Format: "1735012345:actualvalue" or "1735012345:actualvalue:noenter"
+    Format: "1735012345:actualvalue" or "1735012345:actualvalue:noenter:raw"
     where timestamp is all digits.
     This allows sending the same value multiple times by using unique timestamps.
-    The optional :noenter suffix suppresses the Enter keystroke after sending.
+    Flags (can be in any order at end):
+    - :noenter - suppresses the Enter keystroke after sending
+    - :raw - sends without bracketed paste escape sequences
     """
     send_enter = True
+    use_raw = False
     if raw_value and ':' in raw_value:
         parts = raw_value.split(':')
         # Check if first part looks like a timestamp (all digits)
         if parts[0].isdigit():
-            # Check for noenter flag at the end
-            if len(parts) >= 3 and parts[-1] == 'noenter':
-                send_enter = False
-                value = ':'.join(parts[1:-1])  # Everything between timestamp and flag
-            else:
-                value = ':'.join(parts[1:])  # Everything after timestamp
-            return (value, send_enter)
-    return (raw_value, True)
+            # Check for flags at the end (can be in any order)
+            flags = []
+            while len(parts) > 2 and parts[-1] in ('noenter', 'raw'):
+                flags.append(parts.pop())
+            send_enter = 'noenter' not in flags
+            use_raw = 'raw' in flags
+            value = ':'.join(parts[1:])  # Everything after timestamp
+            return (value, send_enter, use_raw)
+    return (raw_value, True, False)
+
+
+def plan_listener(event):
+    """Handle plan mode changes from Firebase"""
+    global stdin_log, plan_listener_initialized
+
+    if event.data is None:
+        return
+
+    # Skip the initial listener event (fires on setup with current value)
+    if not plan_listener_initialized:
+        plan_listener_initialized = True
+        if stdin_log:
+            stdin_log.write(f"[{time.time():.3f}] PLAN_LISTENER_INIT: skipping initial value {event.data}\n")
+            stdin_log.flush()
+        return
+
+    # event.data will be True or False
+    plan_mode = bool(event.data)
+    if stdin_log:
+        stdin_log.write(f"[{time.time():.3f}] PLAN_CHANGE: {plan_mode}\n")
+        stdin_log.flush()
+
+    plan_change_queue.put(plan_mode)
+    print(f"[proxy] Plan mode changed to: {plan_mode}")
 
 
 def stdin_listener(event):
     """Handle stdin input from Firebase"""
-    global last_stdin_id
+    global last_stdin_id, stdin_log
 
     if event.data is None:
         return
@@ -112,23 +145,31 @@ def stdin_listener(event):
         for key, value in sorted(event.data.items(), key=lambda x: int(x[0])):
             idx = int(key)
             if idx > last_stdin_id and value is not None:
-                # extract_value returns (value, send_enter) tuple
-                stdin_queue.put(extract_value(value))
+                # extract_value returns (value, send_enter, use_raw) tuple
+                extracted = extract_value(value)
+                if stdin_log:
+                    stdin_log.write(f"[{time.time():.3f}] FIREBASE_RECV (dict): idx={idx}, raw={repr(value)}, extracted={repr(extracted)}\n")
+                    stdin_log.flush()
+                stdin_queue.put(extracted)
                 last_stdin_id = idx
     elif event.path != '/':
         # Single entry added
         try:
             idx = int(event.path.strip('/'))
             if idx > last_stdin_id:
-                # extract_value returns (value, send_enter) tuple
-                stdin_queue.put(extract_value(event.data))
+                # extract_value returns (value, send_enter, use_raw) tuple
+                extracted = extract_value(event.data)
+                if stdin_log:
+                    stdin_log.write(f"[{time.time():.3f}] FIREBASE_RECV (single): idx={idx}, raw={repr(event.data)}, extracted={repr(extracted)}\n")
+                    stdin_log.flush()
+                stdin_queue.put(extracted)
                 last_stdin_id = idx
         except ValueError:
             pass
 
 
 def main():
-    global proc, ref, master_fd, last_stdin_id
+    global proc, ref, master_fd, last_stdin_id, stdin_log, original_command, plan_listener_initialized
 
     # Parse command line arguments
     parser = argparse.ArgumentParser(
@@ -156,8 +197,14 @@ def main():
     )
 
     args = parser.parse_args()
+    original_command = args.command  # Store original command with all flags
     command = args.command
     name = args.name
+
+    # Set up stdin debug log
+    stdin_log_path = os.path.join(SCRIPT_DIR, '.claude', f'stdin_debug_{name}.log')
+    stdin_log = open(stdin_log_path, 'w')
+    print(f"[proxy] Stdin debug log: {stdin_log_path}")
 
     # Validate service account file exists
     if not os.path.exists(args.service_account):
@@ -196,13 +243,19 @@ def main():
     stdin_ref.listen(stdin_listener)
     print(f"[proxy] Listening for stdin at /shell/{name}/stdin/")
 
+    # Set up plan mode listener
+    plan_ref = ref.child('meta/plan')
+    plan_ref.listen(plan_listener)
+    print(f"[proxy] Listening for plan mode at /shell/{name}/meta/plan")
+
     # Set initial metadata
     print(f"[proxy] Starting: {command}")
     ref.child('meta').set({
         'command': command,
         'started_at': int(time.time() * 1000),
         'updated_at': int(time.time() * 1000),
-        'status': 'running'
+        'status': 'running',
+        'plan':True
     })
 
     # Create a pseudo-terminal so interactive programs work
@@ -267,13 +320,111 @@ def main():
             # Use select to check if there's data to read
             ready, _, _ = select.select([master_fd], [], [], 0.1)
 
+            # Check for plan mode changes from Firebase
+            plan_restart_cmd = None
+            while not plan_change_queue.empty():
+                try:
+                    plan_mode = plan_change_queue.get_nowait()
+                    if plan_mode:
+                        # Plan mode enabled - use original command
+                        plan_restart_cmd = original_command
+                    else:
+                        # Plan mode disabled - remove --permission-mode plan
+                        plan_restart_cmd = original_command.replace(" --permission-mode plan", "")
+                except queue.Empty:
+                    break
+
+            if plan_restart_cmd is not None:
+                print(f"[proxy] Plan mode change - restarting with command: {plan_restart_cmd}")
+                stdin_log.write(f"[{time.time():.3f}] PLAN_RESTART: cmd={repr(plan_restart_cmd)}\n")
+                stdin_log.flush()
+
+                # Terminate current process
+                os.close(master_fd)
+                master_fd = None
+                proc.terminate()
+                try:
+                    proc.wait(timeout=5)
+                except subprocess.TimeoutExpired:
+                    proc.kill()
+                    proc.wait()
+
+                print(f"[proxy] Process terminated, restarting with new command...")
+
+                # Clear previous output in Firebase
+                ref.delete()
+
+                # Reset stdin tracking
+                last_stdin_id = -1
+
+                # Drain any remaining items from the queues
+                while not stdin_queue.empty():
+                    try:
+                        stdin_queue.get_nowait()
+                    except queue.Empty:
+                        break
+
+                # Update command for this restart
+                command = plan_restart_cmd
+
+                # Determine plan mode from the command
+                is_plan_mode = " --permission-mode plan" in command
+
+                # Set initial metadata again
+                ref.child('meta').set({
+                    'command': command,
+                    'started_at': int(time.time() * 1000),
+                    'updated_at': int(time.time() * 1000),
+                    'status': 'running',
+                    'plan': is_plan_mode
+                })
+
+                # Create new PTY
+                master_fd, slave_fd = pty.openpty()
+                winsize = struct.pack('HHHH', 24, 80, 0, 0)
+                fcntl.ioctl(slave_fd, termios.TIOCSWINSZ, winsize)
+                try:
+                    tty.setraw(slave_fd)
+                    fcntl.ioctl(slave_fd, termios.TIOCSWINSZ, winsize)
+                except Exception as e:
+                    print(f"[proxy] Warning: Could not set raw mode: {e}")
+
+                # Restart the process with new command
+                proc = subprocess.Popen(
+                    command,
+                    shell=True,
+                    stdin=slave_fd,
+                    stdout=slave_fd,
+                    stderr=slave_fd,
+                    close_fds=True,
+                    start_new_session=True,
+                    env=env
+                )
+                os.close(slave_fd)
+
+                print(f"[proxy] Process restarted with plan={is_plan_mode}")
+                print("-" * 40)
+                last_meta_update = time.time()
+                continue
+
             # Process any stdin from Firebase
             restart_requested = False
             while not stdin_queue.empty():
                 try:
-                    # extract_value returns (value, send_enter) tuple
+                    # extract_value returns (value, send_enter, use_raw) tuple
                     stdin_tuple = stdin_queue.get_nowait()
-                    stdin_data, send_enter = stdin_tuple if isinstance(stdin_tuple, tuple) else (stdin_tuple, True)
+                    if isinstance(stdin_tuple, tuple):
+                        if len(stdin_tuple) == 3:
+                            stdin_data, send_enter, use_raw = stdin_tuple
+                        else:
+                            stdin_data, send_enter = stdin_tuple
+                            use_raw = False
+                    else:
+                        stdin_data, send_enter, use_raw = stdin_tuple, True, False
+
+                    # Log raw tuple from queue
+                    stdin_log.write(f"[{time.time():.3f}] QUEUE_GET: stdin_data={repr(stdin_data)}, send_enter={send_enter}, use_raw={use_raw}\n")
+                    stdin_log.flush()
 
                     if stdin_data:
                         # Strip any existing newlines from the data
@@ -282,27 +433,56 @@ def main():
                         # Check for /clear command - triggers restart
                         if stdin_data == '/clear':
                             print(f"[proxy] Received /clear - restarting process...")
+                            stdin_log.write(f"[{time.time():.3f}] CLEAR_COMMAND\n")
+                            stdin_log.flush()
                             restart_requested = True
                             break
 
-                        # Send as proper bracketed paste:
-                        # \x1b[200~ = start paste
-                        # \x1b[201~ = end paste
-                        paste_start = b'\x1b[200~'
-                        paste_end = b'\x1b[201~'
+                        # Send content - either raw or with bracketed paste
+                        if use_raw:
+                            # Send raw bytes without bracketed paste
+                            raw_bytes = stdin_data.encode('utf-8')
+                            stdin_log.write(f"[{time.time():.3f}] SENDING_RAW: {repr(raw_bytes)}\n")
+                            stdin_log.flush()
+                            os.write(master_fd, raw_bytes)
+                        else:
+                            # Send as bracketed paste:
+                            # \x1b[200~ = start paste
+                            # \x1b[201~ = end paste
+                            paste_start = b'\x1b[200~'
+                            paste_end = b'\x1b[201~'
+                            paste_bytes = paste_start + stdin_data.encode('utf-8') + paste_end
+                            stdin_log.write(f"[{time.time():.3f}] SENDING_PASTE: {repr(paste_bytes)}\n")
+                            stdin_log.flush()
+                            os.write(master_fd, paste_bytes)
 
-                        # Send paste content
-                        os.write(master_fd, paste_start + stdin_data.encode('utf-8') + paste_end)
-
-                        # Wait for paste to be processed
+                        # Wait for content to be processed
                         time.sleep(0.1)
 
                         # Only send Enter if not suppressed by :noenter flag
                         if send_enter:
+                            stdin_log.write(f"[{time.time():.3f}] SENDING_ENTER: b'\\r'\n")
+                            stdin_log.flush()
                             os.write(master_fd, b'\r')
-                            print(f"[proxy] Sent stdin as bracketed paste + Enter: {repr(stdin_data)}")
+                            stdin_log.write(f"[{time.time():.3f}] ENTER_SENT\n")
+                            stdin_log.flush()
+                            mode_str = "raw" if use_raw else "bracketed paste"
+                            print(f"[proxy] Sent stdin as {mode_str} + Enter: {repr(stdin_data)}")
+                            # Give Claude Code time to process Enter before next input
+                            time.sleep(0.5)
+                            stdin_log.write(f"[{time.time():.3f}] POST_ENTER_DELAY_DONE\n")
+                            stdin_log.flush()
                         else:
-                            print(f"[proxy] Sent stdin as bracketed paste (no Enter): {repr(stdin_data)}")
+                            stdin_log.write(f"[{time.time():.3f}] NO_ENTER (noenter flag)\n")
+                            stdin_log.flush()
+                            mode_str = "raw" if use_raw else "bracketed paste"
+                            print(f"[proxy] Sent stdin as {mode_str} (no Enter): {repr(stdin_data)}")
+                            # Give Claude Code time to process before next input
+                            # This is especially important for "Other" option selections
+                            # which need time to render the custom text input field
+                            time.sleep(0.5)
+                            stdin_log.write(f"[{time.time():.3f}] POST_NOENTER_DELAY_DONE\n")
+                            stdin_log.flush()
                 except queue.Empty:
                     break
                 except OSError as e:
@@ -325,13 +505,19 @@ def main():
                 # Clear previous output in Firebase
                 ref.delete()
 
-                # Reset stdin tracking
+                # Reset stdin tracking and plan listener
                 last_stdin_id = -1
+                plan_listener_initialized = False
 
-                # Drain any remaining items from the queue
+                # Drain any remaining items from the queues
                 while not stdin_queue.empty():
                     try:
                         stdin_queue.get_nowait()
+                    except queue.Empty:
+                        break
+                while not plan_change_queue.empty():
+                    try:
+                        plan_change_queue.get_nowait()
                     except queue.Empty:
                         break
 
@@ -342,7 +528,8 @@ def main():
                     'command': command,
                     'started_at': int(time.time() * 1000),
                     'updated_at': int(time.time() * 1000),
-                    'status': 'running'
+                    'status': 'running',
+                    'plan': True
                 })
 
                 # Create new PTY

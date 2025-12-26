@@ -232,6 +232,18 @@ class PepperInject {
             shellSendBtn.addEventListener('mousedown', () => this.sendShellInput());
         }
 
+        // Plan mode toggle button
+        const planToggleBtn = document.getElementById('pepperinject-plan-toggle');
+        if (planToggleBtn) {
+            planToggleBtn.addEventListener('click', () => {
+                if (!this.shellRef) return;
+                this.shellRef.child('meta/plan').once('value', (snapshot) => {
+                    const currentValue = snapshot.val() === true;
+                    this.shellRef.child('meta/plan').set(!currentValue);
+                });
+            });
+        }
+
         // Add container button
         const addContainerBtn = document.getElementById('pepperinject-add-container-btn');
         if (addContainerBtn) {

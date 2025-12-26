@@ -1,0 +1,37 @@
+[1766713903.762] PLAN_LISTENER_INIT: skipping initial value True
+[1766713909.876] PLAN_CHANGE: False
+[1766713909.942] PLAN_RESTART: cmd='claude'
+[1766713910.040] PLAN_CHANGE: False
+[1766713910.142] PLAN_RESTART: cmd='claude'
+[1766713910.248] PLAN_CHANGE: False
+[1766713910.349] PLAN_RESTART: cmd='claude'
+[1766713910.472] PLAN_CHANGE: False
+[1766713910.573] PLAN_RESTART: cmd='claude'
+[1766713910.680] PLAN_CHANGE: False
+[1766713910.781] PLAN_RESTART: cmd='claude'
+[1766713910.869] PLAN_CHANGE: False
+[1766713910.943] PLAN_CHANGE: True
+[1766713910.970] PLAN_RESTART: cmd='claude --permission-mode plan'
+[1766713911.066] PLAN_CHANGE: True
+[1766713911.168] PLAN_RESTART: cmd='claude --permission-mode plan'
+[1766713911.307] PLAN_CHANGE: True
+[1766713911.408] PLAN_RESTART: cmd='claude --permission-mode plan'
+[1766713911.495] PLAN_CHANGE: True
+[1766713911.596] PLAN_RESTART: cmd='claude --permission-mode plan'
+[1766713911.714] PLAN_CHANGE: True
+[1766713911.815] PLAN_RESTART: cmd='claude --permission-mode plan'
+[1766713911.929] PLAN_CHANGE: True
+[1766713912.031] PLAN_RESTART: cmd='claude --permission-mode plan'
+[1766713912.145] PLAN_CHANGE: True
+[1766713912.241] PLAN_RESTART: cmd='claude --permission-mode plan'
+[1766713912.341] PLAN_CHANGE: True
+[1766713912.443] PLAN_RESTART: cmd='claude --permission-mode plan'
+[1766713912.553] PLAN_CHANGE: True
+[1766713912.654] PLAN_RESTART: cmd='claude --permission-mode plan'
+[1766713912.773] PLAN_CHANGE: True
+[1766713912.876] PLAN_RESTART: cmd='claude --permission-mode plan'
+[1766713912.999] PLAN_CHANGE: True
+[1766713913.101] PLAN_RESTART: cmd='claude --permission-mode plan'
+[1766713913.218] PLAN_CHANGE: True
+[1766713913.321] PLAN_RESTART: cmd='claude --permission-mode plan'
+[1766713913.590] PLAN_CHANGE: True

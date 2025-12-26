@@ -1,7 +1,14 @@
 log("copybtn", "starting")
 let navControls = document.querySelector(".nav-controls")
+
+// check if copy button already exists
+if(navControls.querySelector(".copy-btn")){
+	log("copybtn", "already exists, skipping")
+	return
+}
+
 let copyBtn = document.createElement("button")
-copyBtn.classList.add("nav-control-btn")
+copyBtn.classList.add("nav-control-btn", "copy-btn")
 copyBtn.innerHTML = "<span>✂️</span>"
 navControls.appendChild(copyBtn)
 

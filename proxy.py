@@ -77,17 +77,26 @@ def signal_handler(signum, frame):
 
 
 def extract_value(raw_value):
-    """Parse timestamp:value format, return actual value.
+    """Parse timestamp:value[:noenter] format, return (value, send_enter) tuple.
 
-    Format: "1735012345:actualvalue" where timestamp is all digits.
+    Format: "1735012345:actualvalue" or "1735012345:actualvalue:noenter"
+    where timestamp is all digits.
     This allows sending the same value multiple times by using unique timestamps.
+    The optional :noenter suffix suppresses the Enter keystroke after sending.
     """
+    send_enter = True
     if raw_value and ':' in raw_value:
-        parts = raw_value.split(':', 1)
+        parts = raw_value.split(':')
         # Check if first part looks like a timestamp (all digits)
         if parts[0].isdigit():
-            return parts[1]
-    return raw_value
+            # Check for noenter flag at the end
+            if len(parts) >= 3 and parts[-1] == 'noenter':
+                send_enter = False
+                value = ':'.join(parts[1:-1])  # Everything between timestamp and flag
+            else:
+                value = ':'.join(parts[1:])  # Everything after timestamp
+            return (value, send_enter)
+    return (raw_value, True)
 
 
 def stdin_listener(event):
@@ -103,6 +112,7 @@ def stdin_listener(event):
         for key, value in sorted(event.data.items(), key=lambda x: int(x[0])):
             idx = int(key)
             if idx > last_stdin_id and value is not None:
+                # extract_value returns (value, send_enter) tuple
                 stdin_queue.put(extract_value(value))
                 last_stdin_id = idx
     elif event.path != '/':
@@ -110,6 +120,7 @@ def stdin_listener(event):
         try:
             idx = int(event.path.strip('/'))
             if idx > last_stdin_id:
+                # extract_value returns (value, send_enter) tuple
                 stdin_queue.put(extract_value(event.data))
                 last_stdin_id = idx
         except ValueError:
@@ -117,7 +128,7 @@ def stdin_listener(event):
 
 
 def main():
-    global proc, ref, master_fd
+    global proc, ref, master_fd, last_stdin_id
 
     # Parse command line arguments
     parser = argparse.ArgumentParser(
@@ -257,12 +268,22 @@ def main():
             ready, _, _ = select.select([master_fd], [], [], 0.1)
 
             # Process any stdin from Firebase
+            restart_requested = False
             while not stdin_queue.empty():
                 try:
-                    stdin_data = stdin_queue.get_nowait()
+                    # extract_value returns (value, send_enter) tuple
+                    stdin_tuple = stdin_queue.get_nowait()
+                    stdin_data, send_enter = stdin_tuple if isinstance(stdin_tuple, tuple) else (stdin_tuple, True)
+
                     if stdin_data:
                         # Strip any existing newlines from the data
                         stdin_data = stdin_data.rstrip('\r\n')
+
+                        # Check for /clear command - triggers restart
+                        if stdin_data == '/clear':
+                            print(f"[proxy] Received /clear - restarting process...")
+                            restart_requested = True
+                            break
 
                         # Send as proper bracketed paste:
                         # \x1b[200~ = start paste
@@ -273,15 +294,84 @@ def main():
                         # Send paste content
                         os.write(master_fd, paste_start + stdin_data.encode('utf-8') + paste_end)
 
-                        # Wait for paste to be processed, then send Enter separately
+                        # Wait for paste to be processed
                         time.sleep(0.1)
-                        os.write(master_fd, b'\r')
 
-                        print(f"[proxy] Sent stdin as bracketed paste + Enter: {repr(stdin_data)}")
+                        # Only send Enter if not suppressed by :noenter flag
+                        if send_enter:
+                            os.write(master_fd, b'\r')
+                            print(f"[proxy] Sent stdin as bracketed paste + Enter: {repr(stdin_data)}")
+                        else:
+                            print(f"[proxy] Sent stdin as bracketed paste (no Enter): {repr(stdin_data)}")
                 except queue.Empty:
                     break
                 except OSError as e:
                     print(f"[proxy] Stdin write error: {e}")
+
+            # Handle restart if /clear was received
+            if restart_requested:
+                # Terminate current process
+                os.close(master_fd)
+                master_fd = None
+                proc.terminate()
+                try:
+                    proc.wait(timeout=5)
+                except subprocess.TimeoutExpired:
+                    proc.kill()
+                    proc.wait()
+
+                print(f"[proxy] Process terminated, restarting...")
+
+                # Clear previous output in Firebase
+                ref.delete()
+
+                # Reset stdin tracking
+                last_stdin_id = -1
+
+                # Drain any remaining items from the queue
+                while not stdin_queue.empty():
+                    try:
+                        stdin_queue.get_nowait()
+                    except queue.Empty:
+                        break
+
+                # Re-listen for stdin (previous listener still active on same ref)
+
+                # Set initial metadata again
+                ref.child('meta').set({
+                    'command': command,
+                    'started_at': int(time.time() * 1000),
+                    'updated_at': int(time.time() * 1000),
+                    'status': 'running'
+                })
+
+                # Create new PTY
+                master_fd, slave_fd = pty.openpty()
+                winsize = struct.pack('HHHH', 24, 80, 0, 0)
+                fcntl.ioctl(slave_fd, termios.TIOCSWINSZ, winsize)
+                try:
+                    tty.setraw(slave_fd)
+                    fcntl.ioctl(slave_fd, termios.TIOCSWINSZ, winsize)
+                except Exception as e:
+                    print(f"[proxy] Warning: Could not set raw mode: {e}")
+
+                # Restart the process
+                proc = subprocess.Popen(
+                    command,
+                    shell=True,
+                    stdin=slave_fd,
+                    stdout=slave_fd,
+                    stderr=slave_fd,
+                    close_fds=True,
+                    start_new_session=True,
+                    env=env
+                )
+                os.close(slave_fd)
+
+                print(f"[proxy] Process restarted")
+                print("-" * 40)
+                last_meta_update = time.time()
+                continue
 
             if ready:
                 try:
